@@ -11,6 +11,12 @@ interface NavigationProps {
 const Navigation: React.FC<NavigationProps> = ({ isScrolled, scrollToSection }) => {
   const [isOpen, setIsOpen] = useState(false);
 
+  // #region agent log
+  useEffect(() => {
+    fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Navigation.tsx:14',message:'Mobile Menu State',data:{isOpen,isScrolled,windowWidth:window.innerWidth,viewportHeight:window.innerHeight},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
+  }, [isOpen, isScrolled]);
+  // #endregion
+
   const navLinks: NavLink[] = [
     { name: 'האמנים שלנו', target: 'artists' },
     { name: 'אודות', target: 'about' },

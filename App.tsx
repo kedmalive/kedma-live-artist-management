@@ -6,6 +6,8 @@ import ArtistCard from './components/ArtistCard';
 import ArtistModal from './components/ArtistModal';
 import AccessibilityMenu from './components/AccessibilityMenu';
 import AccessibilityStatement from './components/AccessibilityStatement';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsOfUse from './components/TermsOfUse';
 import WhatsAppButton from './components/WhatsAppButton';
 import { Artist, EventType } from './types';
 import { ARTISTS_DATA } from './constants';
@@ -15,6 +17,8 @@ const App: React.FC = () => {
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
   const [isAccessibilityStatementOpen, setIsAccessibilityStatementOpen] = useState(false);
+  const [isPrivacyPolicyOpen, setIsPrivacyPolicyOpen] = useState(false);
+  const [isTermsOfUseOpen, setIsTermsOfUseOpen] = useState(false);
   
   // #region agent log
   useEffect(() => {
@@ -146,6 +150,12 @@ const App: React.FC = () => {
     accessibilitySettings.highContrast ? 'grayscale invert brightness-125 bg-white text-black' : '',
     accessibilitySettings.underlineLinks ? '[&_a]:underline' : '',
   ].filter(Boolean).join(' ');
+
+  // #region agent log
+  useEffect(() => {
+    fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:ContactSection',message:'Contact Section Render',data:{windowWidth:window.innerWidth,pixelRatio:window.devicePixelRatio},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+  }, []);
+  // #endregion
 
   return (
     <div 
@@ -393,8 +403,18 @@ const App: React.FC = () => {
             >
               Accessibility / נגישות
             </button>
-            <a href="#" className="hover:text-amber-500 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-amber-500 transition-colors">Terms</a>
+            <button 
+              onClick={() => setIsPrivacyPolicyOpen(true)}
+              className="hover:text-amber-500 transition-colors"
+            >
+              Privacy / פרטיות
+            </button>
+            <button 
+              onClick={() => setIsTermsOfUseOpen(true)}
+              className="hover:text-amber-500 transition-colors"
+            >
+              Terms / תקנון
+            </button>
           </div>
           <p className="text-xs opacity-40 font-bold uppercase tracking-[0.5em]">© 2024 Kedma Live Agency. Excellence Defined.</p>
         </div>
@@ -410,6 +430,16 @@ const App: React.FC = () => {
       <AccessibilityStatement 
         isOpen={isAccessibilityStatementOpen}
         onClose={() => setIsAccessibilityStatementOpen(false)}
+      />
+
+      <PrivacyPolicy 
+        isOpen={isPrivacyPolicyOpen}
+        onClose={() => setIsPrivacyPolicyOpen(false)}
+      />
+
+      <TermsOfUse 
+        isOpen={isTermsOfUseOpen}
+        onClose={() => setIsTermsOfUseOpen(false)}
       />
 
       {/* Artist Detail Modal */}
