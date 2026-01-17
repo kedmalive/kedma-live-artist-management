@@ -10,13 +10,14 @@ const WhatsAppButton: React.FC = () => {
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 left-6 z-[90] bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform focus:outline-none focus:ring-4 focus:ring-green-300 flex items-center justify-center"
+      className="fixed bottom-4 sm:bottom-6 left-4 sm:left-6 z-[90] bg-[#25D366] text-white p-3 sm:p-4 rounded-full shadow-2xl hover:scale-110 transition-transform focus:outline-none focus:ring-4 focus:ring-green-300 flex items-center justify-center"
       aria-label="צור קשר בוואטסאפ"
     >
       <svg
         viewBox="0 0 24 24"
-        width="32"
-        height="32"
+        width="28"
+        height="28"
+        className="sm:w-8 sm:h-8"
         fill="currentColor"
         xmlns="http://www.w3.org/2000/svg"
       >

@@ -28,23 +28,23 @@ const AccessibilityMenu: React.FC<AccessibilityMenuProps> = ({
       {/* Floating Toggle Button */}
       <button
         onClick={toggleMenu}
-        className="fixed bottom-6 right-6 z-[90] bg-[#A8D5BA] text-black p-4 rounded-full shadow-2xl hover:scale-110 transition-transform focus:outline-none focus:ring-4 focus:ring-[#B5E5CF]"
+        className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-[90] bg-[#A8D5BA] text-black p-3 sm:p-4 rounded-full shadow-2xl hover:scale-110 transition-transform focus:outline-none focus:ring-4 focus:ring-[#B5E5CF]"
         aria-label="תפריט נגישות"
       >
-        <Accessibility size={32} strokeWidth={2.5} />
+        <Accessibility size={28} className="sm:w-8 sm:h-8" strokeWidth={2.5} />
       </button>
 
       {/* Accessibility Menu */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-[90] w-80 bg-white text-black rounded-3xl shadow-2xl border border-gray-100 overflow-hidden animate-fade-in-up">
-          <div className="p-6 bg-[#A8D5BA] text-black flex justify-between items-center">
-            <h3 className="text-xl font-black uppercase italic tracking-tight">תפריט נגישות</h3>
+        <div className="fixed bottom-20 sm:bottom-24 right-4 sm:right-6 z-[90] w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-white text-black rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-100 overflow-hidden animate-fade-in-up">
+          <div className="p-4 sm:p-6 bg-[#A8D5BA] text-black flex justify-between items-center">
+            <h3 className="text-lg sm:text-xl font-black uppercase italic tracking-tight">תפריט נגישות</h3>
             <button onClick={toggleMenu} className="hover:bg-black/10 rounded-full p-1 transition-colors">
-              <X size={24} />
+              <X size={20} className="sm:w-6 sm:h-6" />
             </button>
           </div>
 
-          <div className="p-6 space-y-6" dir="rtl">
+          <div className="p-4 sm:p-6 space-y-5 sm:space-y-6" dir="rtl">
             {/* Font Size */}
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-gray-600">

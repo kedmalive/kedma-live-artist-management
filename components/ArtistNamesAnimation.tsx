@@ -8,14 +8,14 @@ interface ArtistNamesAnimationProps {
 }
 
 interface AnimatedArtist extends Artist {
+  delay: number;
   x: number;
   y: number;
   id: string;
   displayName: string;
   smokeParticles: SmokeParticle[];
-  appearTime: number; // When this name should appear (relative to now)
-  disappearTime: number; // When this name should disappear (relative to now)
-  isVisible: boolean; // Current visibility state
+  isVisible: boolean;
+  lifetime: number; // How long this name stays visible (in ms)
 }
 
 interface SmokeParticle {
@@ -45,9 +45,9 @@ const ArtistNamesAnimation: React.FC<ArtistNamesAnimationProps> = ({
   const timersRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const animationFrameRef = useRef<number | null>(null);
-  const nextSpawnTimeRef = useRef<number>(0);
+  const spawnIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const artistsRef = useRef<AnimatedArtist[]>([]);
-  
+
   // Keep ref in sync with state
   useEffect(() => {
     artistsRef.current = animatedArtists;
@@ -92,12 +92,13 @@ const ArtistNamesAnimation: React.FC<ArtistNamesAnimationProps> = ({
     );
   };
 
-  // Create a single artist with position and timing
+  // Create a single artist with position
   const createSingleArtist = (
     artist: Artist,
     bounds: TextBounds
   ): AnimatedArtist | null => {
-    const existingPositions = artistsRef.current;
+    const existingPositions = artistsRef.current.filter(a => a.isVisible);
+    
     // Randomly choose Hebrew or English name (50/50)
     const displayName = Math.random() > 0.5 ? artist.name : artist.englishName;
     
@@ -145,7 +146,7 @@ const ArtistNamesAnimation: React.FC<ArtistNamesAnimationProps> = ({
         y <= bounds.y + bounds.height + 20;
 
       if (!isInsideText && isWithinBounds(x, y)) {
-        // Check collision with existing positions
+        // Check collision with existing visible positions
         const hasCollision = existingPositions.some(existing => 
           checkCollision(x, y, existing.x, existing.y)
         );
@@ -180,68 +181,23 @@ const ArtistNamesAnimation: React.FC<ArtistNamesAnimationProps> = ({
       };
     });
 
-    // Random lifetime: 3-6 seconds
-    const lifetime = 3000 + Math.random() * 3000;
-    
+    // Random lifetime: 4-7 seconds
+    const lifetime = 4000 + Math.random() * 3000;
+
     return {
       ...artist,
+      delay: 0,
       x: position.x,
       y: position.y,
       id: `${artist.id}-${Date.now()}-${Math.random()}`,
       displayName,
       smokeParticles,
-      appearTime: 0, // Will be set when spawning
-      disappearTime: lifetime,
-      isVisible: false,
+      isVisible: false, // Will be set to true when spawning
+      lifetime,
     };
   };
 
-  // Spawn a new artist name
-  const spawnArtist = () => {
-    if (!textBounds || artists.length === 0) return;
-
-    const shuffled = [...artists].sort(() => Math.random() - 0.5);
-    
-    for (const artist of shuffled) {
-      const newArtist = createSingleArtist(artist, textBounds);
-      
-      if (newArtist) {
-        // Set appear time to now (0 delay)
-        newArtist.appearTime = 0;
-        newArtist.isVisible = false;
-        
-        // Add to state (not visible yet)
-        setAnimatedArtists(prev => [...prev, newArtist]);
-        
-        // Show the artist after a tiny delay to trigger animation
-        setTimeout(() => {
-          setAnimatedArtists(current => 
-            current.map(a => a.id === newArtist.id ? { ...a, isVisible: true } : a)
-          );
-        }, 100);
-
-        // Schedule disappearance
-        const disappearTimer = setTimeout(() => {
-          setAnimatedArtists(prev => {
-            const updated = prev.map(a => 
-              a.id === newArtist.id ? { ...a, isVisible: false } : a
-            );
-            // Remove after fade-out animation completes (2.5s)
-            setTimeout(() => {
-              setAnimatedArtists(current => current.filter(a => a.id !== newArtist.id));
-            }, 2500);
-            return updated;
-          });
-          timersRef.current.delete(newArtist.id);
-        }, newArtist.disappearTime);
-
-        timersRef.current.set(newArtist.id, disappearTimer);
-        return; // Successfully spawned one, exit
-      }
-    }
-  };
-
-  // Main animation loop - ensure at least 2 names are visible
+  // Main animation loop - maintain continuous flow
   useEffect(() => {
     if (!isVisible || !textBounds || artists.length === 0) {
       // Cleanup all timers
@@ -251,10 +207,51 @@ const ArtistNamesAnimation: React.FC<ArtistNamesAnimationProps> = ({
       return;
     }
 
-    // Spawn initial 2-3 names
+    // Spawn a single artist name
+    const spawnSingleArtist = () => {
+      if (!textBounds || artists.length === 0) return;
+
+      const shuffled = [...artists].sort(() => Math.random() - 0.5);
+      
+      for (const artist of shuffled) {
+        const newArtist = createSingleArtist(artist, textBounds);
+        
+        if (newArtist) {
+          // Add to state (not visible yet)
+          setAnimatedArtists(prev => [...prev, newArtist]);
+
+          // Show the artist after a tiny delay to trigger animation
+          setTimeout(() => {
+            setAnimatedArtists(current => 
+              current.map(a => a.id === newArtist.id ? { ...a, isVisible: true } : a)
+            );
+          }, 50);
+
+          // Schedule disappearance
+          const disappearTimer = setTimeout(() => {
+            setAnimatedArtists(prev => {
+              const updated = prev.map(a => 
+                a.id === newArtist.id ? { ...a, isVisible: false } : a
+              );
+              // Remove after fade-out animation completes (2.5s)
+              setTimeout(() => {
+                setAnimatedArtists(current => current.filter(a => a.id !== newArtist.id));
+              }, 2500);
+              return updated;
+            });
+            timersRef.current.delete(newArtist.id);
+          }, newArtist.lifetime);
+
+          timersRef.current.set(newArtist.id, disappearTimer);
+          return; // Successfully spawned one, exit
+        }
+      }
+    };
+
+    // Spawn initial 2-3 names with staggered delays
     const initialCount = 2 + Math.floor(Math.random() * 2);
     for (let i = 0; i < initialCount; i++) {
-      setTimeout(() => spawnArtist(), i * 500); // Stagger initial spawns
+      setTimeout(() => spawnSingleArtist(), i * 600);
     }
 
     // Function to check and maintain minimum count
@@ -262,28 +259,31 @@ const ArtistNamesAnimation: React.FC<ArtistNamesAnimationProps> = ({
       const currentArtists = artistsRef.current;
       const visibleCount = currentArtists.filter(a => a.isVisible).length;
       
-      if (visibleCount < 2) {
+      // Maintain 2-4 visible names
+      const minCount = 2;
+      const maxCount = 4;
+      
+      if (visibleCount < minCount) {
         // Spawn new ones to maintain minimum
-        const needed = 2 - visibleCount;
+        const needed = minCount - visibleCount;
         for (let i = 0; i < needed; i++) {
-          setTimeout(() => spawnArtist(), i * 400);
+          setTimeout(() => spawnSingleArtist(), i * 500);
         }
       }
     };
 
-    // Check every second
+    // Check every 1.5 seconds
     const checkInterval = setInterval(() => {
       maintainMinimumCount();
-    }, 1000);
+    }, 1500);
 
-    // Spawn new names at irregular intervals
+    // Spawn new names at irregular intervals (when one disappears, spawn a new one)
     const scheduleNextSpawn = () => {
-      // Random interval: 1.5-4 seconds
-      const nextDelay = 1500 + Math.random() * 2500;
-      nextSpawnTimeRef.current = Date.now() + nextDelay;
+      // Random interval: 1.5-3.5 seconds
+      const nextDelay = 1500 + Math.random() * 2000;
       
       const spawnTimer = setTimeout(() => {
-        spawnArtist();
+        spawnSingleArtist();
         scheduleNextSpawn(); // Schedule next spawn
       }, nextDelay);
 
@@ -340,7 +340,7 @@ const ArtistNamesAnimation: React.FC<ArtistNamesAnimationProps> = ({
     };
   }, [textElementRef]);
 
-  if (!isVisible || !textBounds) {
+  if (!isVisible || animatedArtists.length === 0 || !textBounds) {
     return null;
   }
 
@@ -375,7 +375,7 @@ const ArtistNamesAnimation: React.FC<ArtistNamesAnimationProps> = ({
                 left: '50%',
                 top: '50%',
                 transform: 'translate(-50%, -50%)',
-                animationDelay: `${particle.delay}s`,
+                animationDelay: `${artist.delay + particle.delay}s`,
                 animationDuration: `${particle.duration}s`,
                 '--smoke-end-x': `${particle.endX}px`,
                 '--smoke-end-y': `${particle.endY}px`,
