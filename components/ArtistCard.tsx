@@ -1,0 +1,71 @@
+
+import React from 'react';
+import { ArrowLeft, Camera } from 'lucide-react';
+import { Artist } from '../types';
+
+interface ArtistCardProps {
+  artist: Artist;
+  onClick: (artist: Artist) => void;
+}
+
+const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onClick }) => (
+  <div 
+    className="group relative h-[550px] w-full rounded-2xl overflow-hidden cursor-pointer shadow-2xl transition-all duration-700 hover:-translate-y-4 hover:shadow-[#A8D5BA]/40 bg-[#0a0a0a] border border-white/5"
+    onClick={() => onClick(artist)}
+  >
+    {/* Base Image Layer - Centered to ensure faces are visible */}
+    <img 
+      src={artist.image} 
+      alt={`${artist.name} - ${artist.category} | ${artist.englishName} - קדמא לייב ייצוג אמנים`}
+      title={`${artist.name} - ${artist.description}`}
+      className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 group-hover:scale-110"
+      style={{ objectPosition: 'center 20%' }}
+      loading="lazy"
+      onError={(e) => {
+        console.error(`Failed to load image: ${artist.image}`, e);
+        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=800';
+      }}
+    />
+
+    {/* Elegant Gradient Overlay - More transparent at the top to show faces */}
+    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10 opacity-90 group-hover:opacity-80 transition-opacity duration-500" />
+    
+    {/* Subtle Inner Glow */}
+    <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl z-15 pointer-events-none" />
+
+    {/* Photographer Credit */}
+    {artist.credit && (
+      <div className="absolute top-6 left-6 z-20 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
+        <span className="bg-black/60 backdrop-blur-md text-[10px] text-white/90 px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-white/10 font-bold uppercase tracking-wider">
+          <Camera size={12} className="text-[#A8D5BA]" />
+          {artist.credit}
+        </span>
+      </div>
+    )}
+
+    {/* Content Layer - Positioned for maximum readability */}
+    <div className="absolute bottom-0 left-0 right-0 p-8 z-30 translate-y-2 group-hover:translate-y-0 transition-all duration-500">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-10 h-[2px] bg-[#A8D5BA]" />
+        <span className="text-[#A8D5BA] text-[11px] font-black tracking-[0.2em] uppercase">
+          {artist.englishName}
+        </span>
+      </div>
+      
+      <h3 className="text-4xl md:text-5xl font-black text-white mb-3 group-hover:text-[#A8D5BA] transition-colors tracking-tighter leading-none uppercase italic">
+        {artist.name}
+      </h3>
+      
+      <div className="max-h-0 group-hover:max-h-40 overflow-hidden transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100">
+        <p className="text-white/80 text-base leading-relaxed mb-6 line-clamp-2 font-medium">
+          {artist.description}
+        </p>
+        <div className="flex items-center text-black bg-[#A8D5BA] text-xs font-black gap-2 group-hover:gap-4 transition-all uppercase tracking-tighter w-fit px-6 py-3 rounded-full shadow-2xl hover:bg-white">
+          לפרופיל המלא <ArrowLeft size={16} />
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+export default ArtistCard;
