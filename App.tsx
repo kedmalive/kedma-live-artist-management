@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Star, Mic2, Music, Calendar, Phone, Mail, Facebook, Instagram, ChevronDown, CheckCircle, Award, ArrowUpRight } from 'lucide-react';
 import Navigation from './components/Navigation';
 import ArtistCard from './components/ArtistCard';
@@ -7,7 +7,6 @@ import ArtistModal from './components/ArtistModal';
 import AccessibilityMenu from './components/AccessibilityMenu';
 import AccessibilityStatement from './components/AccessibilityStatement';
 import WhatsAppButton from './components/WhatsAppButton';
-import ArtistNamesAnimation from './components/ArtistNamesAnimation';
 import { Artist, EventType } from './types';
 import { ARTISTS_DATA } from './constants';
 
@@ -16,8 +15,12 @@ const App: React.FC = () => {
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
   const [isAccessibilityStatementOpen, setIsAccessibilityStatementOpen] = useState(false);
-  const [showArtistNamesAnimation, setShowArtistNamesAnimation] = useState(false);
-  const kedmaLiveTextRef = useRef<HTMLHeadingElement>(null);
+  
+  // #region agent log
+  useEffect(() => {
+    fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:22',message:'App mounted',data:{windowWidth:window.innerWidth,windowHeight:window.innerHeight,userAgent:navigator.userAgent},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+  }, []);
+  // #endregion
 
   // Accessibility State
   const [accessibilitySettings, setAccessibilitySettings] = useState({
@@ -67,14 +70,6 @@ const App: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    // Show artist names animation after page loads
-    const timer = setTimeout(() => {
-      setShowArtistNamesAnimation(true);
-    }, 800); // Start animation 800ms after page load
-
-    return () => clearTimeout(timer);
-  }, []);
 
   // Add Structured Data for Artists
   useEffect(() => {
@@ -154,7 +149,7 @@ const App: React.FC = () => {
 
   return (
     <div 
-      className={`min-h-screen selection:bg-[#A8D5BA] selection:text-black bg-black transition-all duration-300 ${accessibilityClasses}`}
+      className={`min-h-screen selection:bg-amber-500 selection:text-black bg-black transition-all duration-300 ${accessibilityClasses}`}
     >
       <Navigation isScrolled={isScrolled} scrollToSection={scrollToSection} />
 
@@ -188,27 +183,20 @@ const App: React.FC = () => {
         </div>
 
         {/* Floating Circle Graphic */}
-        <div className="absolute top-1/4 left-10 w-48 h-48 bg-[#A8D5BA] rounded-full blur-3xl opacity-20 animate-pulse" />
+        <div className="absolute top-1/4 left-10 w-48 h-48 bg-amber-500 rounded-full blur-3xl opacity-20 animate-pulse" />
 
         <div className="relative z-10 container mx-auto px-6 text-center space-y-10 flex flex-col items-center">
           <div className="inline-flex items-center gap-2 border border-white/20 bg-white/5 backdrop-blur-md rounded-full px-8 py-3 animate-fade-in opacity-0 [animation-fill-mode:forwards]">
-            <div className="w-2 h-2 bg-[#A8D5BA] rounded-full animate-ping" />
+            <div className="w-2 h-2 bg-amber-500 rounded-full animate-ping" />
             <span className="text-white text-xs font-black tracking-[0.2em] uppercase">Premium Management Agency</span>
           </div>
           
           <div className="relative inline-block">
-            <ArtistNamesAnimation 
-              artists={ARTISTS_DATA} 
-              isVisible={showArtistNamesAnimation}
-              textElementRef={kedmaLiveTextRef}
-            />
-            
             <h1 
-              ref={kedmaLiveTextRef}
               className="text-7xl md:text-[11rem] font-black leading-[0.8] tracking-tighter text-white uppercase italic animate-fade-in-up relative z-20 text-center"
             >
               Kedma<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B5E5CF] to-[#7FB394]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-600">
                 Live
               </span>
             </h1>
@@ -217,7 +205,7 @@ const App: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-8 justify-center pt-10 animate-fade-in delay-700">
             <button 
               onClick={() => scrollToSection('artists')}
-              className="group relative bg-[#A8D5BA] text-black px-12 py-6 rounded-full font-black text-2xl overflow-hidden transition-all hover:scale-105 shadow-[0_0_50px_rgba(168,213,186,0.4)]"
+              className="group relative bg-amber-500 text-black px-12 py-6 rounded-full font-black text-2xl overflow-hidden transition-all hover:scale-105 shadow-[0_0_50px_rgba(245,158,11,0.4)]"
             >
               <span className="relative z-10 flex items-center gap-3">
                 הנבחרת שלנו <ArrowUpRight size={28} />
@@ -226,7 +214,7 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 animate-bounce text-[#A8D5BA] cursor-pointer" onClick={() => scrollToSection('artists')}>
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 animate-bounce text-amber-500 cursor-pointer" onClick={() => scrollToSection('artists')}>
           <ChevronDown size={48} />
         </div>
       </section>
@@ -237,7 +225,7 @@ const App: React.FC = () => {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 mb-24">
             <div className="space-y-6">
               <div className="flex items-center gap-4">
-                <div className="w-20 h-2 bg-[#A8D5BA]" />
+                <div className="w-20 h-2 bg-amber-500" />
                 <h2 className="text-7xl md:text-[8rem] font-black text-white leading-none tracking-tighter uppercase italic">Lineup</h2>
               </div>
               <p className="text-gray-400 text-2xl max-w-2xl font-bold">
@@ -262,7 +250,7 @@ const App: React.FC = () => {
       <section id="about" className="py-32 bg-[#050505] relative overflow-hidden border-y border-white/5">
         <div className="container mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-32">
           <div className="w-full lg:w-1/2 relative">
-             <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#A8D5BA] rounded-full opacity-50 blur-3xl" />
+             <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-500 rounded-full opacity-50 blur-3xl" />
              <div className="relative bg-white p-16 md:p-24 rounded-[3rem] text-black space-y-12">
                 <h3 className="text-6xl font-black italic tracking-tighter uppercase leading-none">לקוחות שלנו</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -272,29 +260,29 @@ const App: React.FC = () => {
                     "אוניברסיטאות", "מפיקי אירועים"
                   ].map((client, idx) => (
                     <div key={idx} className="flex items-center gap-5 group">
-                      <div className="h-4 w-4 bg-[#A8D5BA] rounded-full" />
+                      <div className="h-4 w-4 bg-amber-500 rounded-full" />
                       <span className="text-2xl font-black uppercase tracking-tighter">{client}</span>
                     </div>
                   ))}
                 </div>
                 <div className="pt-10 border-t border-black/10">
-                  <p className="text-[#7FB394] font-black text-xl uppercase italic">EST 2020</p>
+                  <p className="text-amber-600 font-black text-xl uppercase italic">EST 2020</p>
                 </div>
              </div>
           </div>
           
           <div className="w-full lg:w-1/2 space-y-10">
-            <h2 className="text-6xl md:text-[6rem] font-black text-white leading-[0.9] tracking-tighter uppercase italic text-left">Kedma Live.<br/><span className="text-[#A8D5BA]">About Us.</span></h2>
+            <h2 className="text-6xl md:text-[6rem] font-black text-white leading-[0.9] tracking-tighter uppercase italic text-left">Kedma Live.<br/><span className="text-amber-500">About Us.</span></h2>
             <div className="space-y-8 text-gray-400 text-2xl leading-relaxed font-medium">
               <p>
                 קדמא לייב היא הבית של המוזיקה הישראלית האיכותית. אנחנו לא רק מפיקים - אנחנו יוצרים חוויות.
               </p>
               <p>
-                <span className="text-white font-black border-b-4 border-[#A8D5BA]">לילך זהר ניר וגלעד קרונמן:</span> השילוב המנצח של ניסיון שטח, חזון אמנותי ויחס אישי לכל אמן ולקוח.
+                <span className="text-white font-black border-b-4 border-amber-500">לילך זהר ניר וגלעד קרונמן:</span> השילוב המנצח של ניסיון שטח, חזון אמנותי ויחס אישי לכל אמן ולקוח.
               </p>
             </div>
             <div className="pt-10">
-               <button onClick={() => scrollToSection('contact')} className="bg-[#A8D5BA] text-black px-16 py-7 rounded-full font-black text-2xl hover:bg-white transition-all transform hover:scale-105 uppercase tracking-tighter">
+               <button onClick={() => scrollToSection('contact')} className="bg-amber-500 text-black px-16 py-7 rounded-full font-black text-2xl hover:bg-white transition-all transform hover:scale-105 uppercase tracking-tighter">
                  בואו נדבר
                </button>
             </div>
@@ -307,7 +295,7 @@ const App: React.FC = () => {
         <div className="container mx-auto px-6">
           <div className="glass rounded-[4rem] overflow-hidden border border-white/10">
             <div className="flex flex-col lg:flex-row">
-              <div className="w-full lg:w-[45%] bg-[#A8D5BA] p-20 lg:p-32 flex flex-col justify-between relative overflow-hidden">
+              <div className="w-full lg:w-[45%] bg-amber-500 p-20 lg:p-32 flex flex-col justify-between relative overflow-hidden">
                 <div className="relative z-10 space-y-16">
                   <div className="space-y-6">
                     <h3 className="text-6xl lg:text-9xl font-black italic uppercase leading-none text-black tracking-tighter">Book<br/>Now</h3>
@@ -316,19 +304,19 @@ const App: React.FC = () => {
                   
                   <div className="space-y-10">
                     <a href="tel:054-6507710" className="flex items-center gap-8 group">
-                      <div className="bg-black p-6 rounded-full text-[#A8D5BA] group-hover:bg-white group-hover:text-black transition-all">
+                      <div className="bg-black p-6 rounded-full text-amber-500 group-hover:bg-white group-hover:text-black transition-all">
                         <Phone size={36} strokeWidth={3} />
                       </div>
                       <span className="text-3xl font-black text-black">054-6507710</span>
                     </a>
                     <a href="mailto:info@kedma-live.com" className="flex items-center gap-8 group">
-                      <div className="bg-black p-6 rounded-full text-[#A8D5BA] group-hover:bg-white group-hover:text-black transition-all">
+                      <div className="bg-black p-6 rounded-full text-amber-500 group-hover:bg-white group-hover:text-black transition-all">
                         <Mail size={36} strokeWidth={3} />
                       </div>
                       <span className="text-3xl font-black text-black">info@kedma-live.com</span>
                     </a>
                     <a href="https://wa.me/972546507710" target="_blank" rel="noopener noreferrer" className="flex items-center gap-8 group">
-                      <div className="bg-black p-6 rounded-full text-[#A8D5BA] group-hover:bg-white group-hover:text-black transition-all">
+                      <div className="bg-black p-6 rounded-full text-amber-500 group-hover:bg-white group-hover:text-black transition-all">
                         <svg
                           viewBox="0 0 24 24"
                           width="36"
@@ -359,20 +347,20 @@ const App: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div className="space-y-4">
                       <label className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Full Name / שם מלא</label>
-                      <input type="text" className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold" placeholder="ישראל ישראלי" />
+                      <input type="text" className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-amber-500 transition-colors text-2xl font-bold" placeholder="ישראל ישראלי" />
                     </div>
                     <div className="space-y-4">
                       <label className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Phone / טלפון</label>
-                      <input type="tel" className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold" placeholder="050-0000000" />
+                      <input type="tel" className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-amber-500 transition-colors text-2xl font-bold" placeholder="050-0000000" />
                     </div>
                   </div>
                   <div className="space-y-4">
                     <label className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Email / כתובת מייל</label>
-                    <input type="email" className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold" placeholder="example@email.com" />
+                    <input type="email" className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-amber-500 transition-colors text-2xl font-bold" placeholder="example@email.com" />
                   </div>
                   <div className="space-y-4">
                     <label className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Event Type / סוג האירוע</label>
-                    <select className="w-full bg-transparent border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold appearance-none">
+                    <select className="w-full bg-transparent border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-amber-500 transition-colors text-2xl font-bold appearance-none">
                       {Object.values(EventType).map(val => (
                         <option key={val} value={val} className="bg-black">{val}</option>
                       ))}
@@ -380,9 +368,9 @@ const App: React.FC = () => {
                   </div>
                   <div className="space-y-4">
                     <label className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Message / הודעה</label>
-                    <textarea rows={3} className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold" placeholder="ספרו לנו על האירוע..."></textarea>
+                    <textarea rows={3} className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-amber-500 transition-colors text-2xl font-bold" placeholder="ספרו לנו על האירוע..."></textarea>
                   </div>
-                  <button className="w-full bg-white text-black font-black py-8 rounded-2xl hover:bg-[#A8D5BA] transition-all shadow-2xl text-2xl uppercase tracking-tighter">
+                  <button className="w-full bg-white text-black font-black py-8 rounded-2xl hover:bg-amber-500 transition-all shadow-2xl text-2xl uppercase tracking-tighter">
                     Send Request / שלח פרטים
                   </button>
                 </form>
@@ -396,17 +384,17 @@ const App: React.FC = () => {
       <footer className="bg-black py-24 border-t border-white/5 text-center text-gray-500">
         <div className="container mx-auto px-6 flex flex-col items-center gap-12">
            <div className="text-5xl font-black tracking-tighter text-white uppercase italic">
-            KEDMA<span className="text-[#A8D5BA]">LIVE</span>
+            KEDMA<span className="text-amber-500">LIVE</span>
           </div>
           <div className="flex flex-wrap justify-center gap-12 text-sm font-black uppercase tracking-[0.2em]">
             <button 
               onClick={() => setIsAccessibilityStatementOpen(true)}
-              className="hover:text-[#A8D5BA] transition-colors"
+              className="hover:text-amber-500 transition-colors"
             >
               Accessibility / נגישות
             </button>
-            <a href="#" className="hover:text-[#A8D5BA] transition-colors">Privacy</a>
-            <a href="#" className="hover:text-[#A8D5BA] transition-colors">Terms</a>
+            <a href="#" className="hover:text-amber-500 transition-colors">Privacy</a>
+            <a href="#" className="hover:text-amber-500 transition-colors">Terms</a>
           </div>
           <p className="text-xs opacity-40 font-bold uppercase tracking-[0.5em]">© 2024 Kedma Live Agency. Excellence Defined.</p>
         </div>

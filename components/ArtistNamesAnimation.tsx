@@ -84,6 +84,10 @@ const ArtistNamesAnimation: React.FC<ArtistNamesAnimationProps> = ({
 
   // Check if position is within screen bounds
   const isWithinBounds = (x: number, y: number, padding: number = 50): boolean => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ArtistNamesAnimation.tsx:88',message:'isWithinBounds check',data:{x,y,padding,windowWidth:window.innerWidth,windowHeight:window.innerHeight,result:(x>=padding&&x<=window.innerWidth-padding&&y>=padding&&y<=window.innerHeight-padding)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+    // #endregion
+    
     return (
       x >= padding &&
       x <= window.innerWidth - padding &&
@@ -104,6 +108,10 @@ const ArtistNamesAnimation: React.FC<ArtistNamesAnimationProps> = ({
     
     const minDistance = 120;
     const maxDistance = 250;
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ArtistNamesAnimation.tsx:107',message:'createSingleArtist entry',data:{artistName:artist.name,displayName,minDistance,maxDistance,bounds,existingCount:existingPositions.length,windowWidth:window.innerWidth},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+    // #endregion
     const zones = ['top', 'bottom', 'left', 'right'] as const;
     
     let position: { x: number; y: number } | null = null;
@@ -165,6 +173,9 @@ const ArtistNamesAnimation: React.FC<ArtistNamesAnimationProps> = ({
         x: bounds.centerX + Math.cos(angle) * distance,
         y: bounds.centerY + Math.sin(angle) * distance,
       };
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ArtistNamesAnimation.tsx:162',message:'Using fallback position',data:{position,attempts:maxAttempts,bounds},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+      // #endregion
     }
 
     // Generate smoke particles (5-8 particles per name)
