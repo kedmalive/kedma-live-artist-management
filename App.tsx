@@ -151,12 +151,6 @@ const App: React.FC = () => {
     accessibilitySettings.underlineLinks ? '[&_a]:underline' : '',
   ].filter(Boolean).join(' ');
 
-  // #region agent log
-  useEffect(() => {
-    fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:ContactSection',message:'Contact Section Render',data:{windowWidth:window.innerWidth,pixelRatio:window.devicePixelRatio},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-  }, []);
-  // #endregion
-
   return (
     <div 
       className={`min-h-screen selection:bg-amber-500 selection:text-black bg-black transition-all duration-300 ${accessibilityClasses}`}
