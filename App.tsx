@@ -307,12 +307,20 @@ const App: React.FC = () => {
                   </div>
                   
                   <div className="space-y-10">
-                    <a href="tel:054-6507710" className="flex items-center gap-8 group">
-                      <div className="bg-black p-6 rounded-full text-amber-500 group-hover:bg-white group-hover:text-black transition-all">
-                        <Phone size={36} strokeWidth={3} />
-                      </div>
-                      <span className="text-3xl font-black text-black">054-6507710</span>
-                    </a>
+                    <div className="flex flex-col gap-6">
+                      <a href="tel:054-6507710" className="flex items-center gap-8 group">
+                        <div className="bg-black p-6 rounded-full text-amber-500 group-hover:bg-white group-hover:text-black transition-all">
+                          <Phone size={36} strokeWidth={3} />
+                        </div>
+                        <span className="text-3xl font-black text-black">054-6507710</span>
+                      </a>
+                      <a href="tel:050-4844614" className="flex items-center gap-8 group">
+                        <div className="bg-black p-6 rounded-full text-amber-500 group-hover:bg-white group-hover:text-black transition-all">
+                          <Phone size={36} strokeWidth={3} />
+                        </div>
+                        <span className="text-3xl font-black text-black">050-4844614</span>
+                      </a>
+                    </div>
                     <a href="mailto:info@kedma-live.com" className="flex items-center gap-8 group">
                       <div className="bg-black p-6 rounded-full text-amber-500 group-hover:bg-white group-hover:text-black transition-all">
                         <Mail size={36} strokeWidth={3} />

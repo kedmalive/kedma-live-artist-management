@@ -63,7 +63,7 @@ const AccessibilityStatement: React.FC<AccessibilityStatementProps> = ({ isOpen,
             </p>
             <div className="bg-gray-50 p-6 rounded-2xl space-y-2">
               <p>שם: גלעד קרונמן</p>
-              <p>טלפון: 054-6507710</p>
+              <p>טלפון: 054-6507710 / 050-4844614</p>
               <p>אימייל: kedmalive1@gmail.com</p>
             </div>
           </section>

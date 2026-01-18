@@ -111,7 +111,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
               <br />
               <strong>אימייל:</strong> info@kedma-live.com
               <br />
-              <strong>טלפון:</strong> 054-6507710
+              <strong>טלפון:</strong> 054-6507710 / 050-4844614
             </p>
           </section>
 
