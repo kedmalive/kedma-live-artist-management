@@ -46,12 +46,16 @@ const App: React.FC = () => {
     });
   };
 
-  const backgroundImages = [
-    '/ero-background.jpg',
-    '/ero-bg-1.jpg',
-    '/ero-bg-2.jpg',
-    '/ero-bg-3.JPG'
+  const backgroundSlides: { src: string; credit: string }[] = [
+    { src: '/ero-background.jpg', credit: '' },
+    { src: '/ero-bg-1.jpg', credit: '' },
+    { src: '/ero-bg-2.jpg', credit: '' },
+    { src: '/ero-bg-3.JPG', credit: '' },
+    { src: '/ero-bg-4.JPG', credit: 'תמר חנן' },
+    { src: '/ero-bg-5.jpg', credit: 'ארתור לנדה' },
+    { src: '/ero-bg-6.jpg', credit: 'ארתור לנדה' },
   ];
+  const backgroundImages = backgroundSlides.map((s) => s.src);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -162,7 +166,7 @@ const App: React.FC = () => {
       <section id="hero" className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Cinematic Background with Sliding Images */}
         <div className="absolute inset-0 overflow-hidden">
-          {backgroundImages.map((image, index) => (
+          {backgroundSlides.map((slide, index) => (
             <div
               key={`bg-${index}`}
               className={`absolute inset-0 will-change-opacity transition-opacity duration-[2000ms] ease-in-out ${
@@ -172,7 +176,7 @@ const App: React.FC = () => {
               }`}
             >
               <img
-                src={image}
+                src={slide.src}
                 className="absolute inset-0 w-full h-full object-cover grayscale"
                 style={{ opacity: 0.6, willChange: 'opacity' }}
                 alt={`Hero Background ${index + 1}`}
@@ -186,6 +190,13 @@ const App: React.FC = () => {
           ))}
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-[2] pointer-events-none" />
         </div>
+
+        {/* Photo credit - only when current slide has credit */}
+        {backgroundSlides[currentBgIndex]?.credit && (
+          <div className="absolute bottom-24 left-4 sm:left-6 z-[5] text-white/60 text-xs sm:text-sm font-medium">
+            צילום: {backgroundSlides[currentBgIndex].credit}
+          </div>
+        )}
 
         {/* Floating Circle Graphic */}
         <div className="absolute top-1/4 left-10 w-48 h-48 bg-[#A8D5BA] rounded-full blur-3xl opacity-20 animate-pulse" />
