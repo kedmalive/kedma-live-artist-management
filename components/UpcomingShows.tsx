@@ -4,6 +4,11 @@ import type { UpcomingShow } from '../types';
 
 type ApiResponse = {
   shows: UpcomingShow[];
+  _debug?: {
+    totalRecords: number;
+    fieldNames: string[];
+    firstRecordFields: Record<string, unknown>;
+  };
 };
 
 function formatShowDate(iso: string): string {
@@ -38,6 +43,10 @@ const UpcomingShows: React.FC = () => {
         const data = (await res.json()) as ApiResponse;
         if (!cancelled) {
           setShows(Array.isArray(data.shows) ? data.shows : []);
+          // Debug: log what we got
+          if (data._debug) {
+            console.log('Airtable Debug Info:', data._debug);
+          }
         }
       } catch (e: any) {
         if (!cancelled) {

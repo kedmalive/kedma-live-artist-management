@@ -111,15 +111,55 @@ export default async function handler(req: any, res: any) {
 
     const data = JSON.parse(bodyText) as AirtableListResponse;
 
+    // Debug: log what we're getting from Airtable
+    const debugInfo = {
+      totalRecords: data.records?.length || 0,
+      fieldNames: data.records?.[0] ? Object.keys(data.records[0].fields || {}) : [],
+      firstRecordFields: data.records?.[0]?.fields || {},
+    };
+
     const shows: NormalizedShow[] = (data.records || [])
       .map((r) => {
         const fields = r.fields || {};
-        const dateIso = toIsoDateString(fields[fieldDate]);
-        const artist = isNonEmptyString(fields[fieldArtist]) ? fields[fieldArtist].trim() : "";
-        const location = isNonEmptyString(fields[fieldLocation]) ? fields[fieldLocation].trim() : "";
+        
+        // Handle date - could be string or array from Airtable
+        let dateIso: string | null = null;
+        const dateValue = fields[fieldDate];
+        if (typeof dateValue === 'string') {
+          dateIso = toIsoDateString(dateValue);
+        } else if (Array.isArray(dateValue) && dateValue.length > 0) {
+          dateIso = toIsoDateString(dateValue[0]);
+        }
+        
+        // Handle artist - could be string, array, or object (from formula/linked record)
+        let artist = "";
+        const artistValue = fields[fieldArtist];
+        if (isNonEmptyString(artistValue)) {
+          artist = artistValue.trim();
+        } else if (Array.isArray(artistValue) && artistValue.length > 0) {
+          artist = String(artistValue[0]).trim();
+        } else if (typeof artistValue === 'object' && artistValue !== null) {
+          // Try to extract string from object
+          artist = String(artistValue).trim();
+        }
+        
+        // Handle location
+        let location = "";
+        const locationValue = fields[fieldLocation];
+        if (isNonEmptyString(locationValue)) {
+          location = locationValue.trim();
+        } else if (Array.isArray(locationValue) && locationValue.length > 0) {
+          location = String(locationValue[0]).trim();
+        }
+        
+        // Handle tickets URL
         const ticketsUrl = isNonEmptyString(fields[fieldTicketsUrl]) ? fields[fieldTicketsUrl].trim() : undefined;
 
-        if (!dateIso || !artist || !location) return null;
+        if (!dateIso || !artist || !location) {
+          // Log why record was filtered out
+          console.log('Filtered out record:', { dateIso, artist, location, fields: Object.keys(fields) });
+          return null;
+        }
         return { date: dateIso, artist, location, ticketsUrl };
       })
       .filter(Boolean) as NormalizedShow[];
@@ -130,7 +170,8 @@ export default async function handler(req: any, res: any) {
     res.statusCode = 200;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate=300");
-    res.end(JSON.stringify({ shows }));
+    // Include debug info in response (remove in production)
+    res.end(JSON.stringify({ shows, _debug: debugInfo }));
   } catch (err: any) {
     res.statusCode = 500;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
