@@ -18,8 +18,8 @@ type NormalizedShow = {
 
 const DEFAULT_FIELDS = {
   date: "תאריך המופע",
-  artist: "אמן =", // Note: Airtable field name includes " ="
-  location: "מקום המופע A", // Note: Airtable field name includes " A"
+  artist: "אמן", // Exact field name from Airtable
+  location: "מקום המופע", // Exact field name from Airtable
   publish: "עלה לאתר",
   ticketsUrl: "קישור לרכישת כרטיסים",
 } as const;
@@ -29,37 +29,33 @@ function isNonEmptyString(v: unknown): v is string {
 }
 
 function toIsoDateString(v: unknown): string | null {
-  if (!v) return null;
-  // Handle string dates
-  if (isNonEmptyString(v)) {
-    const d = new Date(v);
-    if (Number.isNaN(d.getTime())) return null;
-    return d.toISOString();
-  }
-  // Handle Date objects
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'api/upcoming-shows.ts:31',message:'toIsoDateString called',data:{v,vType:typeof v,isString:typeof v==='string',isArray:Array.isArray(v),isObject:typeof v==='object'&&v!==null&&!Array.isArray(v)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+  // #endregion
+
+  // Handle Date objects directly
   if (v instanceof Date) {
     if (Number.isNaN(v.getTime())) return null;
     return v.toISOString();
   }
-  return null;
-}
 
-function extractStringValue(v: unknown): string {
-  if (isNonEmptyString(v)) return v.trim();
-  if (Array.isArray(v) && v.length > 0) {
-    // Handle linked records or arrays - take first element
-    return extractStringValue(v[0]);
+  // Handle string dates
+  if (!isNonEmptyString(v)) {
+    // #region agent log
+    if (v !== null && v !== undefined) {
+      fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'api/upcoming-shows.ts:40',message:'Date not string or Date object',data:{v,vType:typeof v,stringified:String(v)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    }
+    // #endregion
+    return null;
   }
-  if (typeof v === 'object' && v !== null) {
-    // Try common object patterns from Airtable
-    if ('name' in v && isNonEmptyString(v.name)) return v.name.trim();
-    if ('value' in v && isNonEmptyString(v.value)) return v.value.trim();
-    if ('text' in v && isNonEmptyString(v.text)) return v.text.trim();
-    // Last resort: stringify
-    const str = String(v);
-    return str !== '[object Object]' ? str.trim() : '';
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime())) {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'api/upcoming-shows.ts:47',message:'Invalid date string',data:{v,parsed:new Date(v).toString()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
+    return null;
   }
-  return String(v || '').trim();
+  return d.toISOString();
 }
 
 function getEnv(name: string): string | null {
@@ -69,6 +65,10 @@ function getEnv(name: string): string | null {
 }
 
 export default async function handler(req: any, res: any) {
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'api/upcoming-shows.ts:44',message:'API handler called',data:{method:req.method},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+  // #endregion
+
   if (req.method && req.method !== "GET") {
     res.statusCode = 405;
     res.setHeader("Allow", "GET");
@@ -80,6 +80,10 @@ export default async function handler(req: any, res: any) {
   const baseId = getEnv("AIRTABLE_BASE_ID");
   const tableIdOrName = getEnv("AIRTABLE_TABLE_ID_OR_NAME") ?? getEnv("AIRTABLE_TABLE_NAME");
   const viewName = getEnv("AIRTABLE_VIEW_NAME");
+
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'api/upcoming-shows.ts:55',message:'Env vars loaded',data:{hasToken:!!token,hasBaseId:!!baseId,hasTable:!!tableIdOrName,hasViewName:!!viewName,viewName:viewName},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+  // #endregion
 
   // Optional overrides (in case field names change later)
   const fieldDate = getEnv("AIRTABLE_FIELD_DATE") ?? DEFAULT_FIELDS.date;
@@ -123,6 +127,10 @@ export default async function handler(req: any, res: any) {
     });
 
     const bodyText = await airtableRes.text();
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'api/upcoming-shows.ts:96',message:'Airtable response received',data:{status:airtableRes.status,ok:airtableRes.ok,bodyLength:bodyText.length,url:url.toString()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
+
     if (!airtableRes.ok) {
       res.statusCode = 502;
       res.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -138,30 +146,42 @@ export default async function handler(req: any, res: any) {
 
     const data = JSON.parse(bodyText) as AirtableListResponse;
 
-    // Debug: log first record structure (temporary)
-    const debugInfo = data.records?.[0] ? {
-      recordId: data.records[0].id,
-      allFieldNames: Object.keys(data.records[0].fields || {}),
-      dateFieldValue: data.records[0].fields[fieldDate],
-      artistFieldValue: data.records[0].fields[fieldArtist],
-      locationFieldValue: data.records[0].fields[fieldLocation],
-      dateFieldType: typeof data.records[0].fields[fieldDate],
-      artistFieldType: typeof data.records[0].fields[fieldArtist],
-      locationFieldType: typeof data.records[0].fields[fieldLocation],
-    } : null;
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'api/upcoming-shows.ts:112',message:'Airtable data parsed',data:{totalRecords:data.records?.length||0,firstRecordFields:data.records?.[0]?.fields?Object.keys(data.records[0].fields):null,fieldDate:fieldDate,fieldArtist:fieldArtist,fieldLocation:fieldLocation},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
 
     const shows: NormalizedShow[] = (data.records || [])
-      .map((r) => {
+      .map((r, idx) => {
         const fields = r.fields || {};
-        const dateIso = toIsoDateString(fields[fieldDate]);
-        const artist = extractStringValue(fields[fieldArtist]);
-        const location = extractStringValue(fields[fieldLocation]);
-        const ticketsUrl = extractStringValue(fields[fieldTicketsUrl]) || undefined;
+        const rawDate = fields[fieldDate];
+        const rawArtist = fields[fieldArtist];
+        const rawLocation = fields[fieldLocation];
+        const dateIso = toIsoDateString(rawDate);
+        const artist = isNonEmptyString(rawArtist) ? rawArtist.trim() : "";
+        const location = isNonEmptyString(rawLocation) ? rawLocation.trim() : "";
+        const ticketsUrl = isNonEmptyString(fields[fieldTicketsUrl]) ? fields[fieldTicketsUrl].trim() : undefined;
 
-        if (!dateIso || !artist || !location) return null;
+        // #region agent log
+        if (idx === 0) {
+          fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'api/upcoming-shows.ts:122',message:'First record mapping',data:{rawDate,rawDateType:typeof rawDate,dateIso,rawArtist,rawArtistType:typeof rawArtist,artist,rawLocation,rawLocationType:typeof rawLocation,location,willInclude:!!(dateIso && artist && location)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+        }
+        // #endregion
+
+        if (!dateIso || !artist || !location) {
+          // #region agent log
+          if (idx < 3) {
+            fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'api/upcoming-shows.ts:130',message:'Record filtered out',data:{idx,hasDate:!!dateIso,hasArtist:!!artist,hasLocation:!!location,rawDate,rawArtist,rawLocation},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+          }
+          // #endregion
+          return null;
+        }
         return { date: dateIso, artist, location, ticketsUrl };
       })
       .filter(Boolean) as NormalizedShow[];
+
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'api/upcoming-shows.ts:138',message:'Shows array created',data:{totalRecords:data.records?.length||0,showsCount:shows.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
 
     // The Airtable view is already sorted, but we defensively sort as well.
     shows.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -169,15 +189,7 @@ export default async function handler(req: any, res: any) {
     res.statusCode = 200;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate=300");
-    // Include debug info temporarily to diagnose the issue
-    res.end(JSON.stringify({ 
-      shows, 
-      _debug: {
-        totalRecords: data.records?.length || 0,
-        showsFound: shows.length,
-        firstRecord: debugInfo,
-      }
-    }));
+    res.end(JSON.stringify({ shows }));
   } catch (err: any) {
     res.statusCode = 500;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
