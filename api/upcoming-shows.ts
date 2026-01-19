@@ -29,10 +29,37 @@ function isNonEmptyString(v: unknown): v is string {
 }
 
 function toIsoDateString(v: unknown): string | null {
-  if (!isNonEmptyString(v)) return null;
-  const d = new Date(v);
-  if (Number.isNaN(d.getTime())) return null;
-  return d.toISOString();
+  if (!v) return null;
+  // Handle string dates
+  if (isNonEmptyString(v)) {
+    const d = new Date(v);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toISOString();
+  }
+  // Handle Date objects
+  if (v instanceof Date) {
+    if (Number.isNaN(v.getTime())) return null;
+    return v.toISOString();
+  }
+  return null;
+}
+
+function extractStringValue(v: unknown): string {
+  if (isNonEmptyString(v)) return v.trim();
+  if (Array.isArray(v) && v.length > 0) {
+    // Handle linked records or arrays - take first element
+    return extractStringValue(v[0]);
+  }
+  if (typeof v === 'object' && v !== null) {
+    // Try common object patterns from Airtable
+    if ('name' in v && isNonEmptyString(v.name)) return v.name.trim();
+    if ('value' in v && isNonEmptyString(v.value)) return v.value.trim();
+    if ('text' in v && isNonEmptyString(v.text)) return v.text.trim();
+    // Last resort: stringify
+    const str = String(v);
+    return str !== '[object Object]' ? str.trim() : '';
+  }
+  return String(v || '').trim();
 }
 
 function getEnv(name: string): string | null {
@@ -111,55 +138,27 @@ export default async function handler(req: any, res: any) {
 
     const data = JSON.parse(bodyText) as AirtableListResponse;
 
-    // Debug: log what we're getting from Airtable
-    const debugInfo = {
-      totalRecords: data.records?.length || 0,
-      fieldNames: data.records?.[0] ? Object.keys(data.records[0].fields || {}) : [],
-      firstRecordFields: data.records?.[0]?.fields || {},
-    };
+    // Debug: log first record structure (temporary)
+    const debugInfo = data.records?.[0] ? {
+      recordId: data.records[0].id,
+      allFieldNames: Object.keys(data.records[0].fields || {}),
+      dateFieldValue: data.records[0].fields[fieldDate],
+      artistFieldValue: data.records[0].fields[fieldArtist],
+      locationFieldValue: data.records[0].fields[fieldLocation],
+      dateFieldType: typeof data.records[0].fields[fieldDate],
+      artistFieldType: typeof data.records[0].fields[fieldArtist],
+      locationFieldType: typeof data.records[0].fields[fieldLocation],
+    } : null;
 
     const shows: NormalizedShow[] = (data.records || [])
       .map((r) => {
         const fields = r.fields || {};
-        
-        // Handle date - could be string or array from Airtable
-        let dateIso: string | null = null;
-        const dateValue = fields[fieldDate];
-        if (typeof dateValue === 'string') {
-          dateIso = toIsoDateString(dateValue);
-        } else if (Array.isArray(dateValue) && dateValue.length > 0) {
-          dateIso = toIsoDateString(dateValue[0]);
-        }
-        
-        // Handle artist - could be string, array, or object (from formula/linked record)
-        let artist = "";
-        const artistValue = fields[fieldArtist];
-        if (isNonEmptyString(artistValue)) {
-          artist = artistValue.trim();
-        } else if (Array.isArray(artistValue) && artistValue.length > 0) {
-          artist = String(artistValue[0]).trim();
-        } else if (typeof artistValue === 'object' && artistValue !== null) {
-          // Try to extract string from object
-          artist = String(artistValue).trim();
-        }
-        
-        // Handle location
-        let location = "";
-        const locationValue = fields[fieldLocation];
-        if (isNonEmptyString(locationValue)) {
-          location = locationValue.trim();
-        } else if (Array.isArray(locationValue) && locationValue.length > 0) {
-          location = String(locationValue[0]).trim();
-        }
-        
-        // Handle tickets URL
-        const ticketsUrl = isNonEmptyString(fields[fieldTicketsUrl]) ? fields[fieldTicketsUrl].trim() : undefined;
+        const dateIso = toIsoDateString(fields[fieldDate]);
+        const artist = extractStringValue(fields[fieldArtist]);
+        const location = extractStringValue(fields[fieldLocation]);
+        const ticketsUrl = extractStringValue(fields[fieldTicketsUrl]) || undefined;
 
-        if (!dateIso || !artist || !location) {
-          // Log why record was filtered out
-          console.log('Filtered out record:', { dateIso, artist, location, fields: Object.keys(fields) });
-          return null;
-        }
+        if (!dateIso || !artist || !location) return null;
         return { date: dateIso, artist, location, ticketsUrl };
       })
       .filter(Boolean) as NormalizedShow[];
@@ -170,8 +169,15 @@ export default async function handler(req: any, res: any) {
     res.statusCode = 200;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate=300");
-    // Include debug info in response (remove in production)
-    res.end(JSON.stringify({ shows, _debug: debugInfo }));
+    // Include debug info temporarily to diagnose the issue
+    res.end(JSON.stringify({ 
+      shows, 
+      _debug: {
+        totalRecords: data.records?.length || 0,
+        showsFound: shows.length,
+        firstRecord: debugInfo,
+      }
+    }));
   } catch (err: any) {
     res.statusCode = 500;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
