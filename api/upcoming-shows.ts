@@ -18,8 +18,8 @@ type NormalizedShow = {
 
 const DEFAULT_FIELDS = {
   date: "תאריך המופע",
-  artist: "אמן",
-  location: "מקום המופע",
+  artist: "אמן =", // Note: Airtable field name includes " ="
+  location: "מקום המופע A", // Note: Airtable field name includes " A"
   publish: "עלה לאתר",
   ticketsUrl: "קישור לרכישת כרטיסים",
 } as const;
