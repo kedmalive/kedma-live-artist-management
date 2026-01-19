@@ -11,7 +11,8 @@ export const ARTISTS_DATA: Artist[] = [
     credit: "צילום: נגה שהרבני",
     description: "מהאמנים האהובים והמרגשים בארץ. שירים על יחסים, אמונה ונפש האדם.",
     fullDetails: "המופע של אביתר הוא מסע מוזיקלי הכולל שירים מכל התקופות בעיבודים מיוחדים. הוא משלב במופע גם ביצועים לשיריו של אחיו, מאיר בנאי ז''ל. מלווה בנגנים מוערכים כמו תמיר מוסקט ואיתמר ציגלר.",
-    website: "https://www.eviatarbanai.com/"
+    website: "https://www.eviatarbanai.com/",
+    spotifyUrl: "https://open.spotify.com/artist/3ObnkOSF8KZ9405ZPJtwbB"
   },
   {
     id: 2,
@@ -22,7 +23,8 @@ export const ARTISTS_DATA: Artist[] = [
     credit: "צילום: שי פרנקו",
     description: "זמר, יוצר ומלחין שנחשב לאחת הפריצות הגדולות במוזיקה הישראלית. קול שחודר ללב.",
     fullDetails: "מופע סוחף ומרגש הכולל את להיטיו הגדולים ('מישהו איתי כאן', 'קרן שמש'). בניה מופיע עם הרכב של שישה נגנים מובילים, בהופעה שמתאימה למגוון רחב של אירועים.",
-    website: "https://www.ticketmaster.co.il/performance/MPSD0/001/ALL/iw"
+    website: "https://www.ticketmaster.co.il/performance/MPSD0/001/ALL/iw",
+    spotifyUrl: "https://open.spotify.com/artist/0WjQnf1rQ0tY84gGgjrQQ9"
   },
   {
     id: 3,
@@ -33,7 +35,8 @@ export const ARTISTS_DATA: Artist[] = [
     credit: "צילום: Carlos Yanez",
     description: "מלחין בינלאומי ומאסטר קמנצ'ה. יצירה המשלבת מזרח ומערב.",
     fullDetails: "המופע 'About Love' הוא מסע רגשי עמוק המשלב מקצבים סוחפים עם כלים עתיקים והפקה חדשנית. מארק מופיע על במות נחשבות בכל העולם.",
-    website: "https://markeliyahu.com/"
+    website: "https://markeliyahu.com/",
+    spotifyUrl: "https://open.spotify.com/artist/7k6KVFItaU7pcBvL6poIi9"
   },
   {
     id: 4,
@@ -44,7 +47,8 @@ export const ARTISTS_DATA: Artist[] = [
     credit: "צילום: תמר חנן",
     description: "אחד הראפרים והיוצרים המוערכים והמצליחים בישראל. משלב טקסטים אישיים וחברתיים עם כריזמה בימתית סוחפת.",
     fullDetails: "המופע של רביד הוא חוויה אנרגטית ועוצמתית הכוללת להיטים מכל האלבומים ('כל הזמן הזה', 'כפרה שלי', 'סמוראי'). מתאים לאירועי ענק ופסטיבלים.",
-    website: "https://ravidplotnik.com/"
+    website: "https://ravidplotnik.com/",
+    spotifyUrl: "https://open.spotify.com/artist/2JQK9mzxqKz16lSgICHDTx"
   },
   {
     id: 5,
@@ -55,7 +59,8 @@ export const ARTISTS_DATA: Artist[] = [
     credit: "צילום: יאיר מיוחס",
     description: "זמר עם אנרגיה בימתית יוצאת דופן. חפלה של גרוב, שמחה ורגש.",
     fullDetails: "ידוע ביכולת שלו להרים את הקהל ולייצר חוויה משותפת של ריקוד ושמחה. להיטים כמו 'לווי אותי' ו-'שמש' הם חלק בלתי נפרד מהפסקול הישראלי.",
-    website: "https://www.shaitsabari.com/"
+    website: "https://www.shaitsabari.com/",
+    spotifyUrl: "https://open.spotify.com/artist/0T0COcAFHD9oZ704HbZr2A"
   },
   {
     id: 6,
@@ -66,17 +71,19 @@ export const ARTISTS_DATA: Artist[] = [
     credit: "צילום: אילן בשור",
     description: "אמן רב-תחומי, שחקן וזמר. מחבר בין עולם האמונה לתרבות הישראלית.",
     fullDetails: "מופע ייחודי המשלב שירים עם יכולות משחק וסיפור. המופע של שולי מאופיין באינטימיות ועומק רגשי נדיר.",
-    website: "https://shulirand.co.il/he/home"
+    website: "https://shulirand.co.il/he/home",
+    spotifyUrl: "https://open.spotify.com/artist/7CgBEyXbjOjFX3HiysHtXN"
   },
   {
     id: 7,
     name: "דודו טסה",
     category: "מזרחי / פופ",
-    englishName: "Dudu Tasa",
+    englishName: "Dudu Tassa",
     image: "/dudu-tasa.png",
     credit: "צילום: יפעת שגב",
     description: "זמר ויוצר מזרחי מוביל. שירים מרגשים עם מלודיות קליטות שמחברים את הקהל.",
     fullDetails: "דודו טסה מביא לכם מופע מלא אנרגיה ורגש, הכולל את להיטיו הגדולים. המופע מתאים לאירועים פרטיים, אירועי חברה ופסטיבלים. דודו מופיע עם הרכב מוזיקלי מלא ויוצר חוויה בלתי נשכחת.",
-    website: "https://www.dudu-tassa.com/"
+    website: "https://www.dudu-tassa.com/",
+    spotifyUrl: "https://open.spotify.com/artist/3AoetF4LFZLRJjfuy071mz"
   }
 ];

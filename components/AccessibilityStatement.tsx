@@ -22,7 +22,7 @@ const AccessibilityStatement: React.FC<AccessibilityStatementProps> = ({ isOpen,
         </button>
 
         <div className="space-y-8 text-right" dir="rtl">
-          <h2 className="text-4xl font-black italic tracking-tighter uppercase mb-8 border-b-4 border-amber-500 inline-block">
+          <h2 className="text-4xl font-black italic tracking-tighter uppercase mb-8 border-b-4 border-[#A8D5BA] inline-block">
             הצהרת נגישות
           </h2>
 

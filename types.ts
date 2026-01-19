@@ -9,6 +9,7 @@ export interface Artist {
   description: string;
   fullDetails: string;
   website?: string;
+  spotifyUrl?: string;
 }
 
 export enum EventType {
@@ -22,4 +23,11 @@ export enum EventType {
 export interface NavLink {
   name: string;
   target: string;
+}
+
+export interface UpcomingShow {
+  date: string; // ISO string
+  artist: string;
+  location: string;
+  ticketsUrl?: string;
 }

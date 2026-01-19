@@ -32,20 +32,20 @@ const AIConsultant: React.FC<AIConsultantProps> = ({ onSelectArtist }) => {
     <section id="ai-consultant" className="py-24 bg-gradient-to-b from-[#0a0a0a] to-black relative">
       <div className="container mx-auto px-6">
         <div className="max-w-5xl mx-auto">
-          <div className="glass p-8 md:p-16 rounded-[4rem] border border-amber-500/10 relative overflow-hidden">
+          <div className="glass p-8 md:p-16 rounded-[4rem] border border-[#A8D5BA]/10 relative overflow-hidden">
             {/* Geometric accents like the provided image */}
-            <div className="absolute -top-10 -right-10 w-40 h-40 bg-amber-500 rounded-full blur-3xl opacity-10" />
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#A8D5BA] rounded-full blur-3xl opacity-10" />
             <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-white rounded-full blur-3xl opacity-5" />
             
             <div className="relative z-10 flex flex-col lg:flex-row gap-16 items-center">
               <div className="flex-1 space-y-8">
-                <div className="inline-flex items-center gap-2 bg-amber-500/10 text-amber-500 px-5 py-2 rounded-full border border-amber-500/20 text-xs font-black uppercase tracking-widest">
+                <div className="inline-flex items-center gap-2 bg-[#A8D5BA]/10 text-[#A8D5BA] px-5 py-2 rounded-full border border-[#A8D5BA]/20 text-xs font-black uppercase tracking-widest">
                   <Sparkles size={14} />
                   Booking Assistant AI
                 </div>
                 <h2 className="text-5xl md:text-7xl font-black leading-none text-white tracking-tighter">
                   מצאו את המופע<br/>
-                  <span className="text-amber-500">הנכון עבורכם.</span>
+                  <span className="text-[#A8D5BA]">הנכון עבורכם.</span>
                 </h2>
                 <p className="text-gray-400 text-xl leading-relaxed max-w-lg">
                   הטכנולוגיה שלנו מנתחת את צרכי האירוע שלכם וממליצה על האמן המדויק ביותר מהנבחרת של קדמא.
@@ -57,14 +57,14 @@ const AIConsultant: React.FC<AIConsultantProps> = ({ onSelectArtist }) => {
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="תארו את האירוע שלכם כאן..."
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-6 text-white placeholder:text-gray-600 focus:outline-none focus:border-amber-500 transition-all text-xl pr-16"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-6 text-white placeholder:text-gray-600 focus:outline-none focus:border-[#A8D5BA] transition-all text-xl pr-16"
                   />
                   <div className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-500">
                     <Search size={28} />
                   </div>
                   <button 
                     disabled={loading}
-                    className="mt-6 w-full md:w-auto bg-amber-500 hover:bg-amber-400 disabled:bg-amber-800 text-black font-black py-5 px-12 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-2xl hover:shadow-amber-500/30 text-lg uppercase"
+                    className="mt-6 w-full md:w-auto bg-[#A8D5BA] hover:bg-[#B5E5CF] disabled:bg-[#6BA080] text-black font-black py-5 px-12 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-2xl hover:shadow-[#A8D5BA]/30 text-lg uppercase"
                   >
                     {loading ? (
                       <Loader2 className="animate-spin" size={24} />
@@ -88,7 +88,7 @@ const AIConsultant: React.FC<AIConsultantProps> = ({ onSelectArtist }) => {
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-amber-500 text-sm font-black uppercase">
+                      <div className="flex items-center gap-2 text-[#A8D5BA] text-sm font-black uppercase">
                         <CheckCircle2 size={18} />
                         AI Recommended Match
                       </div>
@@ -98,7 +98,7 @@ const AIConsultant: React.FC<AIConsultantProps> = ({ onSelectArtist }) => {
                     </div>
                     <button 
                       onClick={() => onSelectArtist(recommendedArtist)}
-                      className="w-full bg-white text-black py-4 rounded-xl font-black hover:bg-amber-500 transition-colors text-sm uppercase tracking-widest"
+                      className="w-full bg-white text-black py-4 rounded-xl font-black hover:bg-[#A8D5BA] transition-colors text-sm uppercase tracking-widest"
                     >
                       פרופיל אמן מלא
                     </button>

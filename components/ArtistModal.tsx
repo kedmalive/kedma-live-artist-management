@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { X, Calendar, Share2, Instagram, Music, Globe } from 'lucide-react';
+import { X, Calendar, Instagram, Music, Globe } from 'lucide-react';
 import { Artist } from '../types';
 
 interface ArtistModalProps {
@@ -29,7 +29,7 @@ const ArtistModal: React.FC<ArtistModalProps> = ({ artist, onClose }) => {
         {/* Close Button */}
         <button 
           onClick={onClose} 
-          className="absolute top-4 sm:top-6 md:top-8 left-4 sm:left-6 md:left-8 z-[80] bg-white text-black p-3 sm:p-4 rounded-full hover:bg-amber-500 transition-all transform hover:rotate-90 shadow-2xl"
+          className="absolute top-4 sm:top-6 md:top-8 left-4 sm:left-6 md:left-8 z-[80] bg-white text-black p-3 sm:p-4 rounded-full hover:bg-[#A8D5BA] transition-all transform hover:rotate-90 shadow-2xl"
         >
           <X size={20} className="sm:w-6 sm:h-6" strokeWidth={3} />
         </button>
@@ -47,14 +47,26 @@ const ArtistModal: React.FC<ArtistModalProps> = ({ artist, onClose }) => {
           <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent opacity-90" />
           
           <div className="absolute bottom-4 sm:bottom-8 md:bottom-12 right-4 sm:right-8 md:right-12 left-4 sm:left-8 md:left-12 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-             <div className="bg-amber-500 text-black px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-black tracking-[0.15em] sm:tracking-[0.2em] shadow-2xl">
+             <div className="bg-[#A8D5BA] text-black px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-black tracking-[0.15em] sm:tracking-[0.2em] shadow-2xl">
                {artist.credit || ''}
              </div>
             <div className="flex gap-2 sm:gap-3 md:gap-4">
-              <button className="bg-white/10 backdrop-blur-xl p-3 sm:p-4 md:p-5 rounded-full text-white hover:bg-amber-500 hover:text-black transition-all border border-white/10">
-                <Music size={20} className="sm:w-6 sm:h-6 md:w-7 md:h-7" />
-              </button>
-              <button className="bg-white/10 backdrop-blur-xl p-3 sm:p-4 md:p-5 rounded-full text-white hover:bg-amber-500 hover:text-black transition-all border border-white/10">
+              {artist.spotifyUrl ? (
+                <a
+                  href={artist.spotifyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white/10 backdrop-blur-xl p-3 sm:p-4 md:p-5 rounded-full text-white hover:bg-[#A8D5BA] hover:text-black transition-all border border-white/10"
+                  title="האזן ב-Spotify"
+                >
+                  <Music size={20} className="sm:w-6 sm:h-6 md:w-7 md:h-7" />
+                </a>
+              ) : (
+                <button className="bg-white/10 backdrop-blur-xl p-3 sm:p-4 md:p-5 rounded-full text-white hover:bg-[#A8D5BA] hover:text-black transition-all border border-white/10" disabled>
+                  <Music size={20} className="sm:w-6 sm:h-6 md:w-7 md:h-7" />
+                </button>
+              )}
+              <button className="bg-white/10 backdrop-blur-xl p-3 sm:p-4 md:p-5 rounded-full text-white hover:bg-[#A8D5BA] hover:text-black transition-all border border-white/10">
                 <Instagram size={20} className="sm:w-6 sm:h-6 md:w-7 md:h-7" />
               </button>
               {artist.website && (
@@ -62,7 +74,7 @@ const ArtistModal: React.FC<ArtistModalProps> = ({ artist, onClose }) => {
                   href={artist.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white/10 backdrop-blur-xl p-3 sm:p-4 md:p-5 rounded-full text-white hover:bg-amber-500 hover:text-black transition-all border border-white/10"
+                  className="bg-white/10 backdrop-blur-xl p-3 sm:p-4 md:p-5 rounded-full text-white hover:bg-[#A8D5BA] hover:text-black transition-all border border-white/10"
                 >
                   <Globe size={20} className="sm:w-6 sm:h-6 md:w-7 md:h-7" />
                 </a>
@@ -76,8 +88,8 @@ const ArtistModal: React.FC<ArtistModalProps> = ({ artist, onClose }) => {
           <div className="space-y-8 sm:space-y-10 md:space-y-12">
             <div>
               <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div className="w-10 sm:w-12 md:w-16 h-[2px] sm:h-[3px] bg-amber-500" />
-                <span className="text-amber-500 font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase">
+                <div className="w-10 sm:w-12 md:w-16 h-[2px] sm:h-[3px] bg-[#A8D5BA]" />
+                <span className="text-[#A8D5BA] font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase">
                   {artist.englishName}
                 </span>
               </div>
@@ -91,7 +103,7 @@ const ArtistModal: React.FC<ArtistModalProps> = ({ artist, onClose }) => {
                 {artist.description}
               </p>
               <div className="h-px w-full bg-gradient-to-l from-white/20 to-transparent" />
-              <p className="text-gray-400 text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed font-medium pr-4 sm:pr-6 md:pr-10 border-r-2 sm:border-r-4 border-amber-500/30">
+              <p className="text-gray-400 text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed font-medium pr-4 sm:pr-6 md:pr-10 border-r-2 sm:border-r-4 border-[#A8D5BA]/30">
                 {artist.fullDetails}
               </p>
             </div>
@@ -103,13 +115,10 @@ const ArtistModal: React.FC<ArtistModalProps> = ({ artist, onClose }) => {
                    const contactEl = document.getElementById('contact');
                    if (contactEl) contactEl.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="flex-1 bg-amber-500 text-black py-5 sm:py-6 md:py-7 lg:py-8 px-6 sm:px-8 md:px-10 lg:px-12 rounded-xl sm:rounded-[1.5rem] md:rounded-[2rem] font-black text-base sm:text-lg md:text-xl lg:text-2xl hover:bg-white transition-all flex items-center justify-center gap-3 sm:gap-4 md:gap-5 shadow-[0_20px_50px_rgba(245,158,11,0.3)] transform hover:-translate-y-2 active:translate-y-0 uppercase tracking-tighter"
+                className="flex-1 bg-[#A8D5BA] text-black py-5 sm:py-6 md:py-7 lg:py-8 px-6 sm:px-8 md:px-10 lg:px-12 rounded-xl sm:rounded-[1.5rem] md:rounded-[2rem] font-black text-base sm:text-lg md:text-xl lg:text-2xl hover:bg-white transition-all flex items-center justify-center gap-3 sm:gap-4 md:gap-5 shadow-[0_20px_50px_rgba(168,213,186,0.3)] transform hover:-translate-y-2 active:translate-y-0 uppercase tracking-tighter"
               >
                 <Calendar size={24} className="sm:w-7 sm:h-7 md:w-8 md:h-8" strokeWidth={2.5} />
                 בדוק זמינות להופעה
-              </button>
-              <button className="bg-white/5 border border-white/10 p-5 sm:p-6 md:p-7 lg:p-8 rounded-xl sm:rounded-[1.5rem] md:rounded-[2rem] text-white hover:bg-white hover:text-black transition-all flex items-center justify-center sm:flex-shrink-0">
-                <Share2 size={24} className="sm:w-7 sm:h-7 md:w-8 md:h-8" />
               </button>
             </div>
           </div>

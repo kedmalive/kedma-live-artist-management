@@ -30,7 +30,7 @@ const Navigation: React.FC<NavigationProps> = ({ isScrolled, scrollToSection }) 
           className="text-lg sm:text-xl md:text-2xl font-black tracking-tighter text-white cursor-pointer group flex items-center gap-1.5 sm:gap-2" 
           onClick={() => scrollToSection('hero')}
         >
-          <div className="bg-amber-500 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-sm rotate-1 group-hover:rotate-0 transition-transform text-black">KEDMA</div>
+          <div className="bg-[#A8D5BA] px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-sm rotate-1 group-hover:rotate-0 transition-transform text-black">KEDMA</div>
           <span className="text-white">LIVE</span>
         </div>
 
@@ -40,14 +40,14 @@ const Navigation: React.FC<NavigationProps> = ({ isScrolled, scrollToSection }) 
             <button 
               key={link.name} 
               onClick={() => scrollToSection(link.target)}
-              className="text-white/70 hover:text-amber-500 transition-all font-bold text-sm tracking-wide uppercase"
+              className="text-white/70 hover:text-[#A8D5BA] transition-all font-bold text-sm tracking-wide uppercase"
             >
               {link.name}
             </button>
           ))}
           <button 
             onClick={() => scrollToSection('contact')} 
-            className="bg-white text-black px-5 lg:px-6 py-2 lg:py-2.5 rounded-full font-black hover:bg-amber-500 transition-all transform hover:scale-105 active:scale-95 text-sm uppercase"
+            className="bg-white text-black px-5 lg:px-6 py-2 lg:py-2.5 rounded-full font-black hover:bg-[#A8D5BA] transition-all transform hover:scale-105 active:scale-95 text-sm uppercase"
           >
             להזמנת מופע
           </button>
@@ -69,7 +69,7 @@ const Navigation: React.FC<NavigationProps> = ({ isScrolled, scrollToSection }) 
                 scrollToSection(link.target);
                 setIsOpen(false);
               }}
-              className="text-2xl sm:text-3xl text-white/90 font-black hover:text-amber-500 transition-colors uppercase"
+              className="text-2xl sm:text-3xl text-white/90 font-black hover:text-[#A8D5BA] transition-colors uppercase"
             >
               {link.name}
             </button>
@@ -79,7 +79,7 @@ const Navigation: React.FC<NavigationProps> = ({ isScrolled, scrollToSection }) 
               scrollToSection('contact');
               setIsOpen(false);
             }}
-            className="w-full max-w-sm bg-amber-500 text-black py-4 sm:py-5 rounded-xl sm:rounded-2xl font-black text-lg sm:text-xl shadow-[0_0_30px_rgba(245,158,11,0.3)]"
+            className="w-full max-w-sm bg-[#A8D5BA] text-black py-4 sm:py-5 rounded-xl sm:rounded-2xl font-black text-lg sm:text-xl shadow-[0_0_30px_rgba(168,213,186,0.3)]"
           >
             להזמנת מופע עכשיו
           </button>

@@ -22,23 +22,23 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
         </button>
 
         <div className="space-y-8 text-right" dir="rtl">
-          <h2 className="text-4xl font-black italic tracking-tighter uppercase mb-8 border-b-4 border-amber-500 inline-block">
+          <h2 className="text-4xl font-black italic tracking-tighter uppercase mb-8 border-b-4 border-[#A8D5BA] inline-block">
             מדיניות פרטיות
           </h2>
 
-          <div className="bg-amber-50 border-r-4 border-amber-500 p-4 mb-6 text-sm">
+          <div className="bg-[#E8F5ED] border-r-4 border-[#A8D5BA] p-4 mb-6 text-sm">
             <strong>הבהרה משפטית:</strong> מסמך זה מהווה תבנית כללית למדיניות פרטיות. מומלץ להיוועץ עם עורך דין המתמחה בתחום כדי לוודא התאמה מלאה לצרכים הספציפיים של העסק ולדרישות החוק המשתנות.
           </div>
 
           <section className="space-y-4">
-            <h3 className="text-2xl font-bold text-amber-600">1. מבוא</h3>
+            <h3 className="text-2xl font-bold text-[#7FB394]">1. מבוא</h3>
             <p className="text-lg leading-relaxed">
               קדמא לייב (להלן: "החברה" או "אנחנו") מכבדת את פרטיות המשתמשים באתר (להלן: "המשתמש" או "אתה"). מדיניות פרטיות זו מפרטת כיצד אנו אוספים, משתמשים ומגנים על המידע האישי שאתה מספק לנו בעת השימוש באתר.
             </p>
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-2xl font-bold text-amber-600">2. המידע שאנו אוספים</h3>
+            <h3 className="text-2xl font-bold text-[#7FB394]">2. המידע שאנו אוספים</h3>
             <p className="text-lg leading-relaxed">
               אנו אוספים מידע שהמשתמש מוסר מרצונו החופשי בעת מילוי טופס יצירת קשר או שימוש בשירותים באתר:
             </p>
@@ -51,7 +51,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-2xl font-bold text-amber-600">3. השימוש במידע</h3>
+            <h3 className="text-2xl font-bold text-[#7FB394]">3. השימוש במידע</h3>
             <p className="text-lg leading-relaxed">
               המידע הנאסף ישמש למטרות הבאות:
             </p>
@@ -65,7 +65,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-2xl font-bold text-amber-600">4. העברת מידע לצדדים שלישיים</h3>
+            <h3 className="text-2xl font-bold text-[#7FB394]">4. העברת מידע לצדדים שלישיים</h3>
             <p className="text-lg leading-relaxed">
               החברה לא תמכור או תשכיר את המידע האישי שלך לצדדים שלישיים. אנו עשויים לשתף מידע במקרים הבאים בלבד:
             </p>
@@ -77,35 +77,35 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ isOpen, onClose }) => {
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-2xl font-bold text-amber-600">5. אבטחת מידע</h3>
+            <h3 className="text-2xl font-bold text-[#7FB394]">5. אבטחת מידע</h3>
             <p className="text-lg leading-relaxed">
               אנו נוקטים באמצעי אבטחה מקובלים כדי להגן על המידע האישי שלך מפני גישה בלתי מורשית, אובדן או שימוש לרעה. עם זאת, יש לזכור כי אף אמצעי אבטחה באינטרנט אינו בטוח ב-100%.
             </p>
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-2xl font-bold text-amber-600">6. זכויות המשתמש</h3>
+            <h3 className="text-2xl font-bold text-[#7FB394]">6. זכויות המשתמש</h3>
             <p className="text-lg leading-relaxed">
               בהתאם לחוק הגנת הפרטיות, התשמ"א-1981, הינך זכאי לעיין במידע המוחזק עליך במאגר המידע שלנו, לבקש לתקנו או למחקו במידה ואינו מדויק או אינו רלוונטי עוד.
             </p>
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-2xl font-bold text-amber-600">7. עוגיות (Cookies)</h3>
+            <h3 className="text-2xl font-bold text-[#7FB394]">7. עוגיות (Cookies)</h3>
             <p className="text-lg leading-relaxed">
               האתר משתמש ב-"עוגיות" לצורך תפעולו השוטף והתקין, לאיסוף נתונים סטטיסטיים ולהתאמת האתר להעדפותיך. באפשרותך לשנות את הגדרות הדפדפן שלך כדי לחסום עוגיות, אך הדבר עלול לפגוע בחלק משירותי האתר.
             </p>
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-2xl font-bold text-amber-600">8. שינויים במדיניות הפרטיות</h3>
+            <h3 className="text-2xl font-bold text-[#7FB394]">8. שינויים במדיניות הפרטיות</h3>
             <p className="text-lg leading-relaxed">
               החברה רשאית לעדכן את מדיניות הפרטיות מעת לעת. שינויים מהותיים יפורסמו באתר וייכנסו לתוקף מיד עם פרסומם.
             </p>
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-2xl font-bold text-amber-600">9. יצירת קשר</h3>
+            <h3 className="text-2xl font-bold text-[#7FB394]">9. יצירת קשר</h3>
             <p className="text-lg leading-relaxed">
               לכל שאלה או פנייה בנושא פרטיות, ניתן ליצור עמנו קשר בכתובת:
               <br />
