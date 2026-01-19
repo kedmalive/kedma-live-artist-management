@@ -4,11 +4,6 @@ import type { UpcomingShow } from '../types';
 
 type ApiResponse = {
   shows: UpcomingShow[];
-  _debug?: {
-    totalRecords: number;
-    fieldNames: string[];
-    firstRecordFields: Record<string, unknown>;
-  };
 };
 
 function formatShowDate(iso: string): string {
@@ -35,18 +30,25 @@ const UpcomingShows: React.FC = () => {
         setError(null);
 
         const res = await fetch('/api/upcoming-shows', { method: 'GET' });
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/UpcomingShows.tsx:32',message:'Fetch response received',data:{ok:res.ok,status:res.status,statusText:res.statusText},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+        // #endregion
+
         if (!res.ok) {
           const text = await res.text();
+          // #region agent log
+          fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/UpcomingShows.tsx:35',message:'API error',data:{status:res.status,errorText:text.slice(0,200)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+          // #endregion
           throw new Error(`API error (${res.status}): ${text.slice(0, 200)}`);
         }
 
         const data = (await res.json()) as ApiResponse;
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/UpcomingShows.tsx:40',message:'Data parsed',data:{hasShows:!!data.shows,isArray:Array.isArray(data.shows),showsLength:Array.isArray(data.shows)?data.shows.length:0,firstShow:data.shows?.[0]},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+        // #endregion
+
         if (!cancelled) {
           setShows(Array.isArray(data.shows) ? data.shows : []);
-          // Debug: log what we got
-          if (data._debug) {
-            console.log('Airtable Debug Info:', data._debug);
-          }
         }
       } catch (e: any) {
         if (!cancelled) {
