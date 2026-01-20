@@ -1,10 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Calendar, MapPin, Ticket } from 'lucide-react';
 import type { UpcomingShow } from '../types';
-
-type ApiResponse = {
-  shows: UpcomingShow[];
-};
 
 function formatShowDate(iso: string): string {
   const d = new Date(iso);
@@ -16,8 +12,21 @@ function formatShowDate(iso: string): string {
   });
 }
 
+type ApiResponse = {
+  success: boolean;
+  recordCount: number;
+  records: Array<{
+    id: string;
+    createdTime: string;
+    fields: Record<string, unknown>;
+  }>;
+  debug?: {
+    firstRecordFields: string[] | null;
+  };
+};
+
 const UpcomingShows: React.FC = () => {
-  const [shows, setShows] = useState<UpcomingShow[]>([]);
+  const [apiData, setApiData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,29 +37,30 @@ const UpcomingShows: React.FC = () => {
       try {
         setLoading(true);
         setError(null);
+        console.log('[Frontend] Fetching from /api/upcoming-shows');
 
         const res = await fetch('/api/upcoming-shows', { method: 'GET' });
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/UpcomingShows.tsx:32',message:'Fetch response received',data:{ok:res.ok,status:res.status,statusText:res.statusText},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-        // #endregion
+        console.log('[Frontend] Response status:', res.status, res.statusText);
 
         if (!res.ok) {
           const text = await res.text();
-          // #region agent log
-          fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/UpcomingShows.tsx:35',message:'API error',data:{status:res.status,errorText:text.slice(0,200)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-          // #endregion
+          console.error('[Frontend] API error:', text.slice(0, 500));
           throw new Error(`API error (${res.status}): ${text.slice(0, 200)}`);
         }
 
         const data = (await res.json()) as ApiResponse;
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/UpcomingShows.tsx:40',message:'Data parsed',data:{hasShows:!!data.shows,isArray:Array.isArray(data.shows),showsLength:Array.isArray(data.shows)?data.shows.length:0,firstShow:data.shows?.[0]},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-        // #endregion
+        console.log('[Frontend] Data received:', {
+          success: data.success,
+          recordCount: data.recordCount,
+          hasRecords: !!data.records && data.records.length > 0,
+          firstRecordFields: data.debug?.firstRecordFields,
+        });
 
         if (!cancelled) {
-          setShows(Array.isArray(data.shows) ? data.shows : []);
+          setApiData(data);
         }
       } catch (e: any) {
+        console.error('[Frontend] Error:', e);
         if (!cancelled) {
           setError(e?.message || 'שגיאה בטעינת ההופעות');
         }
@@ -64,10 +74,11 @@ const UpcomingShows: React.FC = () => {
     };
   }, []);
 
+  // For now, just show debug info - we'll process data in later steps
   const visibleShows = useMemo(() => {
-    // Keep the UI tight; Airtable view is already sorted by date.
-    return shows.slice(0, 12);
-  }, [shows]);
+    // Step 1: Just return empty array for now - we're debugging the API connection
+    return [];
+  }, [apiData]);
 
   return (
     <section id="upcoming-shows" className="py-32 bg-[#050505] relative overflow-hidden border-y border-white/5">
@@ -88,38 +99,61 @@ const UpcomingShows: React.FC = () => {
 
         {loading && (
           <div className="glass rounded-[2rem] p-10 border border-white/10">
-            <div className="animate-pulse space-y-6">
-              <div className="h-6 w-56 bg-white/10 rounded" />
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {Array.from({ length: 6 }).map((_, idx) => (
-                  <div key={idx} className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
-                    <div className="h-5 w-40 bg-white/10 rounded" />
-                    <div className="h-5 w-56 bg-white/10 rounded" />
-                    <div className="h-10 w-28 bg-white/10 rounded-full" />
-                  </div>
-                ))}
-              </div>
-            </div>
+            <div className="text-white font-black text-2xl mb-3">טוען נתונים מ-Airtable...</div>
+            <div className="text-gray-400 font-medium text-lg">בודק חיבור ל-API...</div>
           </div>
         )}
 
         {!loading && error && (
-          <div className="glass rounded-[2rem] p-10 border border-white/10">
-            <div className="text-white font-black text-2xl mb-3">לא הצלחנו לטעון הופעות כרגע</div>
+          <div className="glass rounded-[2rem] p-10 border border-red-500/20">
+            <div className="text-red-400 font-black text-2xl mb-3">שגיאה בטעינת הנתונים</div>
             <div className="text-gray-400 font-medium text-lg break-words">{error}</div>
-          </div>
-        )}
-
-        {!loading && !error && visibleShows.length === 0 && (
-          <div className="glass rounded-[2rem] p-10 border border-white/10">
-            <div className="text-white font-black text-2xl mb-3">אין הופעות קרובות כרגע</div>
-            <div className="text-gray-400 font-medium text-lg">
-              ברגע שתוסיף הופעות ל‑View באיירטייבל ותסמן “עלה לאתר” — הן יופיעו כאן.
+            <div className="mt-4 text-xs text-gray-500">
+              בדוק את ה-Vercel Function Logs כדי לראות מה קרה.
             </div>
           </div>
         )}
 
-        {!loading && !error && visibleShows.length > 0 && (
+        {!loading && !error && apiData && (
+          <div className="glass rounded-[2rem] p-10 border border-white/10">
+            <div className="text-white font-black text-2xl mb-3">
+              שלב 1: בדיקת חיבור בסיסי - הצלח!
+            </div>
+            <div className="text-gray-400 font-medium text-lg space-y-2">
+              <div>✅ חיבור ל-Airtable עובד</div>
+              <div>📊 מספר רשומות: {apiData.recordCount}</div>
+              {apiData.debug?.firstRecordFields && (
+                <div className="mt-4">
+                  <div className="text-white font-bold mb-2">שמות השדות מהרשומה הראשונה:</div>
+                  <div className="bg-black/50 p-4 rounded-lg font-mono text-sm">
+                    {apiData.debug.firstRecordFields.map((field, idx) => (
+                      <div key={idx} className="text-amber-400">• {field}</div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {apiData.records && apiData.records.length > 0 && (
+                <div className="mt-4">
+                  <div className="text-white font-bold mb-2">תוכן הרשומה הראשונה (raw):</div>
+                  <pre className="bg-black/50 p-4 rounded-lg text-xs overflow-auto max-h-96 text-gray-300">
+                    {JSON.stringify(apiData.records[0].fields, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {!loading && !error && !apiData && (
+          <div className="glass rounded-[2rem] p-10 border border-white/10">
+            <div className="text-white font-black text-2xl mb-3">אין הופעות קרובות כרגע</div>
+            <div className="text-gray-400 font-medium text-lg">
+              לא התקבלו נתונים מ-Airtable.
+            </div>
+          </div>
+        )}
+
+        {visibleShows.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
             {visibleShows.map((show, idx) => (
               <div
@@ -169,4 +203,3 @@ const UpcomingShows: React.FC = () => {
 };
 
 export default UpcomingShows;
-
