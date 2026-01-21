@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Calendar, MapPin, Ticket } from 'lucide-react';
 import type { UpcomingShow } from '../types';
+import showsFromFile from '../data/upcoming-shows.json';
 
 function formatShowDate(iso: string): string {
   const d = new Date(iso);
@@ -12,73 +13,17 @@ function formatShowDate(iso: string): string {
   });
 }
 
-type ApiResponse = {
-  success: boolean;
-  recordCount: number;
-  records: Array<{
-    id: string;
-    createdTime: string;
-    fields: Record<string, unknown>;
-  }>;
-  debug?: {
-    firstRecordFields: string[] | null;
-  };
-};
+const rawShows = showsFromFile as unknown as UpcomingShow[];
 
 const UpcomingShows: React.FC = () => {
-  const [apiData, setApiData] = useState<ApiResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    (async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        console.log('[Frontend] Fetching from /api/upcoming-shows');
-
-        const res = await fetch('/api/upcoming-shows', { method: 'GET' });
-        console.log('[Frontend] Response status:', res.status, res.statusText);
-
-        if (!res.ok) {
-          const text = await res.text();
-          console.error('[Frontend] API error:', text.slice(0, 500));
-          throw new Error(`API error (${res.status}): ${text.slice(0, 200)}`);
-        }
-
-        const data = (await res.json()) as ApiResponse;
-        console.log('[Frontend] Data received:', {
-          success: data.success,
-          recordCount: data.recordCount,
-          hasRecords: !!data.records && data.records.length > 0,
-          firstRecordFields: data.debug?.firstRecordFields,
-        });
-
-        if (!cancelled) {
-          setApiData(data);
-        }
-      } catch (e: any) {
-        console.error('[Frontend] Error:', e);
-        if (!cancelled) {
-          setError(e?.message || 'שגיאה בטעינת ההופעות');
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // For now, just show debug info - we'll process data in later steps
   const visibleShows = useMemo(() => {
-    // Step 1: Just return empty array for now - we're debugging the API connection
-    return [];
-  }, [apiData]);
+    const list = Array.isArray(rawShows) ? rawShows : [];
+    const valid = list.filter(
+      (s) => s && typeof s.date === 'string' && typeof s.artist === 'string' && typeof s.location === 'string'
+    );
+    valid.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    return valid.slice(0, 12);
+  }, []);
 
   return (
     <section id="upcoming-shows" className="py-32 bg-[#050505] relative overflow-hidden border-y border-white/5">
@@ -97,58 +42,11 @@ const UpcomingShows: React.FC = () => {
           </div>
         </div>
 
-        {loading && (
-          <div className="glass rounded-[2rem] p-10 border border-white/10">
-            <div className="text-white font-black text-2xl mb-3">טוען נתונים מ-Airtable...</div>
-            <div className="text-gray-400 font-medium text-lg">בודק חיבור ל-API...</div>
-          </div>
-        )}
-
-        {!loading && error && (
-          <div className="glass rounded-[2rem] p-10 border border-red-500/20">
-            <div className="text-red-400 font-black text-2xl mb-3">שגיאה בטעינת הנתונים</div>
-            <div className="text-gray-400 font-medium text-lg break-words">{error}</div>
-            <div className="mt-4 text-xs text-gray-500">
-              בדוק את ה-Vercel Function Logs כדי לראות מה קרה.
-            </div>
-          </div>
-        )}
-
-        {!loading && !error && apiData && (
-          <div className="glass rounded-[2rem] p-10 border border-white/10">
-            <div className="text-white font-black text-2xl mb-3">
-              שלב 1: בדיקת חיבור בסיסי - הצלח!
-            </div>
-            <div className="text-gray-400 font-medium text-lg space-y-2">
-              <div>✅ חיבור ל-Airtable עובד</div>
-              <div>📊 מספר רשומות: {apiData.recordCount}</div>
-              {apiData.debug?.firstRecordFields && (
-                <div className="mt-4">
-                  <div className="text-white font-bold mb-2">שמות השדות מהרשומה הראשונה:</div>
-                  <div className="bg-black/50 p-4 rounded-lg font-mono text-sm">
-                    {apiData.debug.firstRecordFields.map((field, idx) => (
-                      <div key={idx} className="text-amber-400">• {field}</div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {apiData.records && apiData.records.length > 0 && (
-                <div className="mt-4">
-                  <div className="text-white font-bold mb-2">תוכן הרשומה הראשונה (raw):</div>
-                  <pre className="bg-black/50 p-4 rounded-lg text-xs overflow-auto max-h-96 text-gray-300">
-                    {JSON.stringify(apiData.records[0].fields, null, 2)}
-                  </pre>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {!loading && !error && !apiData && (
+        {visibleShows.length === 0 && (
           <div className="glass rounded-[2rem] p-10 border border-white/10">
             <div className="text-white font-black text-2xl mb-3">אין הופעות קרובות כרגע</div>
             <div className="text-gray-400 font-medium text-lg">
-              לא התקבלו נתונים מ-Airtable.
+              כדי להוסיף הופעות: ערוך את הקובץ <code className="bg-white/10 px-2 py-1 rounded">data/upcoming-shows.json</code> ואחר כך פרסם מחדש (deploy).
             </div>
           </div>
         )}

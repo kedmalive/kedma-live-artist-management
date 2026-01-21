@@ -1,0 +1,32 @@
+[
+  {
+    "date": "2026-01-21",
+    "artist": "מארק אליהו",
+    "location": "אלמא זכרון יעקב",
+    "ticketsUrl": ""
+  },
+  {
+    "date": "2026-01-22",
+    "artist": "רביד פלוטניק",
+    "location": "האנגר 09",
+    "ticketsUrl": ""
+  },
+  {
+    "date": "2026-01-28",
+    "artist": "שי צברי",
+    "location": "רידינג 3",
+    "ticketsUrl": "https://www.eventer.co.il"
+  },
+  {
+    "date": "2026-01-28",
+    "artist": "מארק אליהו",
+    "location": "גבעת ברנר",
+    "ticketsUrl": ""
+  },
+  {
+    "date": "2026-01-29",
+    "artist": "רביד פלוטניק",
+    "location": "גבעת ברנר",
+    "ticketsUrl": ""
+  }
+]
