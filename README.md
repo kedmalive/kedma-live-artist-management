@@ -19,35 +19,59 @@ View your app in AI Studio: https://ai.studio/apps/drive/1M1qpItMSinwULCTR5oRzBJ
 3. Run the app:
    `npm run dev`
 
-## Upcoming Shows (Airtable → Website)
+## Upcoming Shows (Google Sheets → Website)
 
-The homepage includes an **Upcoming Shows** section that is pulled from Airtable via a **Vercel Serverless Function** at `/api/upcoming-shows`.
+The homepage includes an **Upcoming Shows** section that automatically pulls data from a **Google Sheets** published as CSV. Update the sheet and the website updates automatically (no code changes needed).
 
-### Airtable requirements
-- Create a dedicated **View** (you already did): `Website - Upcoming`
-- Table: `show`
-- Keep your filters/sort inside the View (recommended):
-  - Filter: `עלה לאתר` is checked
-  - Filter: `תאריך המופע` is today or later
-  - Sort: `תאריך המופע` ascending
+### How to Set Up Google Sheets
 
-### Field mapping (from your Airtable view)
-The API expects these field names (Hebrew):
-- `תאריך המופע`
-- `אמן`
-- `מקום המופע`
-- `קישור לרכישת כרטיסים`
-- (publish/filtering is handled by the View via `עלה לאתר`)
+#### Step 1: Create the Sheet
+1. Create a new Google Sheet (e.g., `Kedma Live - Upcoming Shows`)
+2. Create a sheet tab named `Upcoming` (or any name you prefer)
 
-### Vercel Environment Variables (Production/Preview)
-Set these in Vercel → Project → Settings → Environment Variables:
-- `AIRTABLE_API_TOKEN` (secret; do NOT commit)
-- `AIRTABLE_BASE_ID` = `appWGKmmM9blhVBOB`
-- `AIRTABLE_TABLE_ID_OR_NAME` = `show`
-- `AIRTABLE_VIEW_NAME` = `Website - Upcoming`
+#### Step 2: Set Up Column Headers (Row 1)
+Add these exact column headers in **row 1** (in English to avoid encoding issues):
+- `date`
+- `artist`
+- `location`
+- `ticketsUrl`
+- `publish`
 
-Optional (only if you ever rename fields in Airtable):
-- `AIRTABLE_FIELD_DATE` (default: `תאריך המופע`)
-- `AIRTABLE_FIELD_ARTIST` (default: `אמן`)
-- `AIRTABLE_FIELD_LOCATION` (default: `מקום המופע`)
-- `AIRTABLE_FIELD_TICKETS_URL` (default: `קישור לרכישת כרטיסים`)
+#### Step 3: Format Your Data
+- **date**: Format as `YYYY-MM-DD` (e.g., `2026-01-28`)
+- **artist**: Artist name (Hebrew is fine)
+- **location**: Venue/location name (Hebrew is fine)
+- **ticketsUrl**: Full URL (can be empty)
+- **publish**: `TRUE` or `FALSE` (only `TRUE` rows will appear on the website)
+
+#### Step 4: Example Rows
+| date | artist | location | ticketsUrl | publish |
+|------|--------|----------|------------|---------|
+| 2026-01-28 | שי צברי | רידינג 3 | https://www.eventer.co.il/... | TRUE |
+| 2026-01-29 | רביד פלוטניק | גבעת ברנר |  | FALSE |
+
+#### Step 5: Publish as CSV
+1. In Google Sheets: **File** → **Share** → **Publish to the web**
+2. Select the sheet: `Upcoming` (or your sheet name)
+3. Format: **Comma-separated values (.csv)**
+4. Click **Publish**
+5. **Copy the URL** that appears (this is your CSV URL)
+
+### Vercel Environment Variables
+
+Set this in **Vercel** → **Project** → **Settings** → **Environment Variables**:
+
+- **Key**: `VITE_UPCOMING_SHOWS_CSV_URL`
+- **Value**: The CSV URL from Step 5 above
+- **Environment**: Production + Preview
+
+After saving, **Redeploy** your site.
+
+### Fallback
+If the CSV URL is not configured or fails to load, the site will automatically fall back to `data/upcoming-shows.json`.
+
+### Notes
+- The CSV is **publicly readable** (anyone with the URL can see the data)
+- Only rows with `publish=TRUE` will appear on the website
+- The website shows up to 12 upcoming shows, sorted by date
+- Updates appear immediately after refreshing the page (no redeploy needed)
