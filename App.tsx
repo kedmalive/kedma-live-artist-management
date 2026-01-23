@@ -11,6 +11,7 @@ import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfUse from './components/TermsOfUse';
 import WhatsAppButton from './components/WhatsAppButton';
 import UpcomingShows from './components/UpcomingShows';
+import SuccessModal from './components/SuccessModal';
 import { Artist, EventType } from './types';
 import { ARTISTS_DATA } from './constants';
 
@@ -32,6 +33,8 @@ const App: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{type: 'success' | 'error', message: string} | null>(null);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [submittedUserName, setSubmittedUserName] = useState<string>('');
   
   // #region agent log
   useEffect(() => {
@@ -223,18 +226,15 @@ const App: React.FC = () => {
         console.warn('EmailJS credentials not configured. Skipping email send.');
       }
 
-      // 2. Open WhatsApp with pre-filled message
+      // 2. Save user name before resetting form
+      const submittedName = formData.name;
+      
+      // 3. Open WhatsApp with pre-filled message
       const whatsappMessage = `שלום, אני ${formData.name}%0A%0Aפרטי קשר:%0Aטלפון: ${formData.phone}%0Aמייל: ${formData.email}%0A%0Aסוג האירוע: ${formData.eventType}%0A%0A${formData.message ? `הודעה: ${formData.message}` : ''}`;
       const whatsappUrl = `https://wa.me/972546507710?text=${whatsappMessage}`;
       window.open(whatsappUrl, '_blank');
 
-      // 3. Show success message and reset form
-      setSubmitStatus({
-        type: 'success',
-        message: 'הפרטים נשלחו בהצלחה! / Form submitted successfully!'
-      });
-
-      // Reset form
+      // 4. Reset form
       setFormData({
         name: '',
         phone: '',
@@ -243,10 +243,9 @@ const App: React.FC = () => {
         message: ''
       });
 
-      // Clear success message after 5 seconds
-      setTimeout(() => {
-        setSubmitStatus(null);
-      }, 5000);
+      // 5. Show success modal with user name
+      setSubmittedUserName(submittedName);
+      setIsSuccessModalOpen(true);
 
     } catch (error) {
       console.error('Error sending form:', error);
@@ -400,7 +399,7 @@ const App: React.FC = () => {
           </div>
           
           <div className="w-full lg:w-1/2 space-y-10">
-            <h2 className="text-6xl md:text-[6rem] font-black text-white leading-[0.9] tracking-tighter uppercase italic text-left">Kedma Live.<br/><span className="text-[#A8D5BA]">About Us.</span></h2>
+            <h2 className="text-6xl md:text-[6rem] font-black text-white leading-[0.9] tracking-tighter uppercase italic text-left" dir="ltr">Kedma Live.<br/><span className="text-[#A8D5BA]">About Us.</span></h2>
             <div className="space-y-8 text-gray-400 text-2xl leading-relaxed font-medium">
               <p>
                 <span className="text-white font-black">קדמא לייב: הבית של המוזיקה הישראלית האיכותית</span>
@@ -434,12 +433,15 @@ const App: React.FC = () => {
                   </div>
                   
                   <div className="space-y-10">
-                    <a href="tel:054-6507710" className="flex items-center gap-8 group">
-                      <div className="bg-black p-6 rounded-full text-[#A8D5BA] group-hover:bg-white group-hover:text-black transition-all">
-                        <Phone size={36} strokeWidth={3} />
-                      </div>
-                      <span className="text-3xl font-black text-black">054-6507710</span>
-                    </a>
+                    <div className="flex items-center gap-8">
+                      <a href="tel:054-6507710" className="flex items-center gap-8 group">
+                        <div className="bg-black p-6 rounded-full text-[#A8D5BA] group-hover:bg-white group-hover:text-black transition-all">
+                          <Phone size={36} strokeWidth={3} />
+                        </div>
+                        <span className="text-3xl font-black text-black">054-6507710</span>
+                      </a>
+                      <span className="text-3xl font-black text-black">050-4844614</span>
+                    </div>
                     <a href="mailto:info@kedma-live.com" className="flex items-center gap-8 group">
                       <div className="bg-black p-6 rounded-full text-[#A8D5BA] group-hover:bg-white group-hover:text-black transition-all">
                         <Mail size={36} strokeWidth={3} />
@@ -631,6 +633,16 @@ const App: React.FC = () => {
       <ArtistModal 
         artist={selectedArtist} 
         onClose={() => setSelectedArtist(null)} 
+      />
+
+      {/* Success Modal */}
+      <SuccessModal 
+        isOpen={isSuccessModalOpen}
+        onClose={() => {
+          setIsSuccessModalOpen(false);
+          setSubmittedUserName('');
+        }}
+        userName={submittedUserName || undefined}
       />
 
       {/* WhatsApp Floating Button */}

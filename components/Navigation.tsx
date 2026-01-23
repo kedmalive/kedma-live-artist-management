@@ -30,8 +30,8 @@ const Navigation: React.FC<NavigationProps> = ({ isScrolled, scrollToSection }) 
           className="text-lg sm:text-xl md:text-2xl font-black tracking-tighter text-white cursor-pointer group flex items-center gap-1.5 sm:gap-2" 
           onClick={() => scrollToSection('hero')}
         >
-          <div className="bg-[#A8D5BA] px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-sm rotate-1 group-hover:rotate-0 transition-transform text-black">KEDMA</div>
           <span className="text-white">LIVE</span>
+          <div className="bg-[#A8D5BA] px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-sm rotate-1 group-hover:rotate-0 transition-transform text-black">KEDMA</div>
         </div>
 
         {/* Desktop Menu */}
