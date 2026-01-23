@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Calendar, MapPin, Ticket } from 'lucide-react';
+import { Calendar, MapPin, Ticket, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { UpcomingShow } from '../types';
 import showsFromFile from '../data/upcoming-shows.json';
 
@@ -11,6 +11,21 @@ function formatShowDate(iso: string): string {
     month: '2-digit',
     year: 'numeric',
   });
+}
+
+function formatMonthYear(date: Date): string {
+  return date.toLocaleDateString('he-IL', {
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
+function getMonthStart(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function getMonthEnd(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
 }
 
 // Parse CSV string to array of objects
@@ -75,6 +90,10 @@ const UpcomingShows: React.FC = () => {
   const [shows, setShows] = useState<UpcomingShow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentMonth, setCurrentMonth] = useState<Date>(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -148,12 +167,42 @@ const UpcomingShows: React.FC = () => {
   }, []);
 
   const visibleShows = useMemo(() => {
-    const valid = shows.filter(
-      (s) => s && typeof s.date === 'string' && typeof s.artist === 'string' && typeof s.location === 'string'
-    );
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    
+    const monthStart = getMonthStart(currentMonth);
+    const monthEnd = getMonthEnd(currentMonth);
+    
+    const valid = shows.filter((s) => {
+      if (!s || typeof s.date !== 'string' || typeof s.artist !== 'string' || typeof s.location !== 'string') {
+        return false;
+      }
+      
+      const showDate = new Date(s.date);
+      if (Number.isNaN(showDate.getTime())) return false;
+      
+      // Remove past dates
+      if (showDate < now) return false;
+      
+      // Filter by current month
+      return showDate >= monthStart && showDate <= monthEnd;
+    });
+    
     valid.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    return valid.slice(0, 12);
-  }, [shows]);
+    return valid;
+  }, [shows, currentMonth]);
+
+  const navigateMonth = (direction: 'prev' | 'next') => {
+    setCurrentMonth((prev) => {
+      const newDate = new Date(prev);
+      if (direction === 'next') {
+        newDate.setMonth(newDate.getMonth() + 1);
+      } else {
+        newDate.setMonth(newDate.getMonth() - 1);
+      }
+      return newDate;
+    });
+  };
 
   return (
     <section id="upcoming-shows" className="py-32 bg-[#050505] relative overflow-hidden border-y border-white/5">
@@ -161,7 +210,7 @@ const UpcomingShows: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 mb-16">
           <div className="space-y-6">
             <div className="flex items-center gap-4">
-              <div className="w-20 h-2 bg-amber-500" />
+              <div className="w-20 h-2 bg-[#A8D5BA]" />
               <h2 className="text-6xl md:text-[6rem] font-black text-white leading-none tracking-tighter uppercase italic">
                 Upcoming
               </h2>
@@ -170,6 +219,31 @@ const UpcomingShows: React.FC = () => {
               הופעות קרובות של אמני קדמא לייב
             </p>
           </div>
+        </div>
+
+        {/* Month Navigation */}
+        <div className="flex items-center justify-between mb-12">
+          <button
+            onClick={() => navigateMonth('prev')}
+            className="flex items-center gap-3 text-[#A8D5BA] hover:text-white transition-colors font-black text-lg uppercase tracking-tighter group"
+          >
+            <ChevronRight size={24} className="group-hover:translate-x-1 transition-transform" />
+            חודש קודם
+          </button>
+          
+          <div className="text-center">
+            <h3 className="text-4xl md:text-5xl font-black text-white uppercase italic tracking-tighter">
+              {formatMonthYear(currentMonth)}
+            </h3>
+          </div>
+          
+          <button
+            onClick={() => navigateMonth('next')}
+            className="flex items-center gap-3 text-[#A8D5BA] hover:text-white transition-colors font-black text-lg uppercase tracking-tighter group"
+          >
+            חודש הבא
+            <ChevronLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
+          </button>
         </div>
 
         {loading && (
@@ -191,7 +265,9 @@ const UpcomingShows: React.FC = () => {
 
         {!loading && !error && visibleShows.length === 0 && (
           <div className="glass rounded-[2rem] p-10 border border-white/10">
-            <div className="text-white font-black text-2xl mb-3">אין הופעות קרובות כרגע</div>
+            <div className="text-white font-black text-2xl mb-3">
+              אין הופעות בחודש {formatMonthYear(currentMonth)}
+            </div>
             <div className="text-gray-400 font-medium text-lg">
               {import.meta.env.VITE_UPCOMING_SHOWS_CSV_URL 
                 ? 'עדכן את Google Sheets והופעות יופיעו כאן אוטומטית.'
@@ -201,44 +277,55 @@ const UpcomingShows: React.FC = () => {
         )}
 
         {visibleShows.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          <div className="space-y-4">
             {visibleShows.map((show, idx) => (
               <div
                 key={`${show.artist}-${show.date}-${idx}`}
-                className="group relative bg-black/60 border border-white/10 rounded-[2rem] p-8 overflow-hidden hover:border-amber-500/40 transition-all"
+                className="group relative bg-black/40 border border-white/10 rounded-2xl p-6 md:p-8 overflow-hidden hover:border-[#A8D5BA]/40 transition-all hover:bg-black/60"
               >
-                <div className="absolute -top-12 -left-12 w-40 h-40 bg-amber-500 rounded-full opacity-10 blur-3xl group-hover:opacity-20 transition-opacity" />
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                  {/* Left side - Date and Artist Info */}
+                  <div className="flex flex-col md:flex-row md:items-center gap-6 flex-1">
+                    {/* Date */}
+                    <div className="flex items-center gap-3 text-[#A8D5BA] font-black tracking-wide min-w-[140px]">
+                      <Calendar size={24} className="text-[#A8D5BA]" />
+                      <span className="text-xl md:text-2xl">{formatShowDate(show.date)}</span>
+                    </div>
 
-                <div className="space-y-6 relative z-10">
-                  <div className="flex items-center gap-3 text-amber-500 font-black tracking-wide">
-                    <Calendar size={20} />
-                    <span className="text-lg">{formatShowDate(show.date)}</span>
-                  </div>
+                    {/* Divider */}
+                    <div className="hidden md:block w-px h-12 bg-white/10" />
 
-                  <div className="space-y-2">
-                    <div className="text-white text-3xl font-black tracking-tighter">{show.artist}</div>
-                    <div className="flex items-center gap-3 text-white/80 font-bold text-xl">
-                      <MapPin size={20} className="text-white/60" />
-                      <span>{show.location}</span>
+                    {/* Artist and Location */}
+                    <div className="space-y-2 flex-1">
+                      <div className="text-white text-2xl md:text-3xl font-black tracking-tighter uppercase">
+                        {show.artist}
+                      </div>
+                      <div className="flex items-center gap-3 text-white/80 font-bold text-lg md:text-xl">
+                        <MapPin size={20} className="text-[#A8D5BA]" />
+                        <span>{show.location}</span>
+                      </div>
                     </div>
                   </div>
 
-                  {show.ticketsUrl ? (
-                    <a
-                      href={show.ticketsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-3 bg-amber-500 text-black px-7 py-4 rounded-full font-black text-lg hover:bg-white transition-all shadow-[0_0_30px_rgba(245,158,11,0.25)]"
-                    >
-                      <Ticket size={20} />
-                      כרטיסים
-                    </a>
-                  ) : (
-                    <div className="inline-flex items-center gap-3 bg-white/10 text-white/60 px-7 py-4 rounded-full font-black text-lg border border-white/10">
-                      <Ticket size={20} />
-                      כרטיסים בקרוב
-                    </div>
-                  )}
+                  {/* Right side - Tickets Button */}
+                  <div className="flex items-center">
+                    {show.ticketsUrl ? (
+                      <a
+                        href={show.ticketsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-3 bg-[#A8D5BA] text-black px-6 md:px-8 py-3 md:py-4 rounded-full font-black text-lg hover:bg-white transition-all shadow-[0_0_30px_rgba(168,213,186,0.25)] whitespace-nowrap"
+                      >
+                        <Ticket size={20} />
+                        כרטיסים
+                      </a>
+                    ) : (
+                      <div className="inline-flex items-center gap-3 bg-white/10 text-white/60 px-6 md:px-8 py-3 md:py-4 rounded-full font-black text-lg border border-white/10 whitespace-nowrap">
+                        <Ticket size={20} />
+                        כרטיסים בקרוב
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
