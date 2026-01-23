@@ -15,7 +15,11 @@ View your app in AI Studio: https://ai.studio/apps/drive/1M1qpItMSinwULCTR5oRzBJ
 
 1. Install dependencies:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+2. Set environment variables in `.env.local`:
+   - `GEMINI_API_KEY` - Your Gemini API key (optional, only for AI Consultant feature)
+   - `VITE_EMAILJS_PUBLIC_KEY` - Your EmailJS Public Key (for contact form)
+   - `VITE_EMAILJS_SERVICE_ID` - Your EmailJS Service ID (for contact form)
+   - `VITE_EMAILJS_TEMPLATE_ID` - Your EmailJS Template ID (for contact form)
 3. Run the app:
    `npm run dev`
 
@@ -75,3 +79,65 @@ If the CSV URL is not configured or fails to load, the site will automatically f
 - Only rows with `publish=TRUE` will appear on the website
 - The website shows up to 12 upcoming shows, sorted by date
 - Updates appear immediately after refreshing the page (no redeploy needed)
+
+## Contact Form Setup (EmailJS)
+
+The contact form sends submissions via **EmailJS** (free tier: 200 emails/month) and opens WhatsApp with a pre-filled message.
+
+### How to Set Up EmailJS
+
+#### Step 1: Create EmailJS Account
+1. Sign up at [emailjs.com](https://www.emailjs.com) (free account)
+2. Verify your email address
+
+#### Step 2: Add Email Service
+1. Go to **Email Services** in the dashboard
+2. Click **Add New Service**
+3. Choose your email provider (Gmail, Outlook, etc.)
+4. Follow the setup instructions
+5. **Copy the Service ID** (you'll need it later)
+
+#### Step 3: Create Email Template
+1. Go to **Email Templates** in the dashboard
+2. Click **Create New Template**
+3. Set **To Email** to your email address (e.g., `info@kedma-live.com`)
+4. Set **From Name** to: `{{from_name}}`
+5. Set **Subject** to: `New Contact Form Submission from {{from_name}}`
+6. In the **Content** field, use this template:
+
+```
+Name: {{from_name}}
+Email: {{from_email}}
+Phone: {{phone}}
+Event Type: {{event_type}}
+Message: {{message}}
+```
+
+7. **Copy the Template ID** (you'll need it later)
+
+#### Step 4: Get Public Key
+1. Go to **Account** → **General** in the dashboard
+2. Find your **Public Key** and copy it
+
+#### Step 5: Add to Environment Variables
+Add these to your `.env.local` file:
+
+```
+VITE_EMAILJS_PUBLIC_KEY=your_public_key_here
+VITE_EMAILJS_SERVICE_ID=your_service_id_here
+VITE_EMAILJS_TEMPLATE_ID=your_template_id_here
+```
+
+#### Step 6: Deploy
+If deploying to Vercel, add these same variables in **Vercel** → **Project** → **Settings** → **Environment Variables**.
+
+### How It Works
+- When a user submits the form:
+  1. An email is sent to your configured email address via EmailJS
+  2. WhatsApp opens with a pre-filled message containing all form data
+  3. User can review and send the WhatsApp message manually
+
+### Notes
+- EmailJS is optional - if credentials are not configured, the form will still open WhatsApp
+- WhatsApp link works immediately without any setup
+- The form includes basic validation (required fields, email format)

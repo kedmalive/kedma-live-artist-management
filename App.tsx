@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { Star, Mic2, Music, Calendar, Phone, Mail, Facebook, Instagram, ChevronDown, CheckCircle, Award, ArrowUpRight } from 'lucide-react';
+import { Star, Mic2, Music, Calendar, Phone, Mail, Facebook, Instagram, ChevronDown, CheckCircle, Award, ArrowUpRight, Loader2 } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 import Navigation from './components/Navigation';
 import ArtistCard from './components/ArtistCard';
 import ArtistModal from './components/ArtistModal';
@@ -21,11 +22,30 @@ const App: React.FC = () => {
   const [isPrivacyPolicyOpen, setIsPrivacyPolicyOpen] = useState(false);
   const [isTermsOfUseOpen, setIsTermsOfUseOpen] = useState(false);
   
+  // Contact Form State
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    eventType: EventType.CORPORATE,
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{type: 'success' | 'error', message: string} | null>(null);
+  
   // #region agent log
   useEffect(() => {
     fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:22',message:'App mounted',data:{windowWidth:window.innerWidth,windowHeight:window.innerHeight,userAgent:navigator.userAgent},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
   }, []);
   // #endregion
+
+  // Initialize EmailJS once on component mount
+  useEffect(() => {
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+    if (publicKey) {
+      emailjs.init(publicKey);
+    }
+  }, []);
 
   // Accessibility State
   const [accessibilitySettings, setAccessibilitySettings] = useState({
@@ -147,6 +167,95 @@ const App: React.FC = () => {
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  // Contact Form Handler
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear status when user starts typing
+    if (submitStatus) setSubmitStatus(null);
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Basic validation
+    if (!formData.name.trim() || !formData.email.trim() || !formData.phone.trim()) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'אנא מלא את כל השדות הנדרשים / Please fill all required fields'
+      });
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'כתובת מייל לא תקינה / Invalid email address'
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    try {
+      // 1. Send email via EmailJS
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+
+      if (publicKey && serviceId && templateId) {
+        // Send email (EmailJS is already initialized in useEffect)
+        await emailjs.send(serviceId, templateId, {
+          from_name: formData.name,
+          from_email: formData.email,
+          phone: formData.phone,
+          event_type: formData.eventType,
+          message: formData.message,
+          to_email: 'info@kedma-live.com', // Recipient email
+        });
+      } else {
+        console.warn('EmailJS credentials not configured. Skipping email send.');
+      }
+
+      // 2. Open WhatsApp with pre-filled message
+      const whatsappMessage = `שלום, אני ${formData.name}%0A%0Aפרטי קשר:%0Aטלפון: ${formData.phone}%0Aמייל: ${formData.email}%0A%0Aסוג האירוע: ${formData.eventType}%0A%0A${formData.message ? `הודעה: ${formData.message}` : ''}`;
+      const whatsappUrl = `https://wa.me/972546507710?text=${whatsappMessage}`;
+      window.open(whatsappUrl, '_blank');
+
+      // 3. Show success message and reset form
+      setSubmitStatus({
+        type: 'success',
+        message: 'הפרטים נשלחו בהצלחה! / Form submitted successfully!'
+      });
+
+      // Reset form
+      setFormData({
+        name: '',
+        phone: '',
+        email: '',
+        eventType: EventType.CORPORATE,
+        message: ''
+      });
+
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        setSubmitStatus(null);
+      }, 5000);
+
+    } catch (error) {
+      console.error('Error sending form:', error);
+      setSubmitStatus({
+        type: 'error',
+        message: 'שגיאה בשליחת הטופס. אנא נסה שוב או צור קשר ישירות. / Error submitting form. Please try again or contact us directly.'
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -294,10 +403,13 @@ const App: React.FC = () => {
             <h2 className="text-6xl md:text-[6rem] font-black text-white leading-[0.9] tracking-tighter uppercase italic text-left">Kedma Live.<br/><span className="text-[#A8D5BA]">About Us.</span></h2>
             <div className="space-y-8 text-gray-400 text-2xl leading-relaxed font-medium">
               <p>
-                קדמא לייב היא הבית של המוזיקה הישראלית האיכותית. אנחנו לא רק מפיקים - אנחנו יוצרים חוויות.
+                <span className="text-white font-black">קדמא לייב: הבית של המוזיקה הישראלית האיכותית</span>
               </p>
               <p>
-                <span className="text-white font-black border-b-4 border-[#A8D5BA]">לילך זהר ניר וגלעד קרונמן:</span> השילוב המנצח של ניסיון שטח, חזון אמנותי ויחס אישי לכל אמן ולקוח.
+                אנחנו לא רק משווקים מופעים – אנחנו יוצרים חוויות. קדמא לייב היא חברת בוטיק לייצוג אמנים והפקת מופעים, המתמחה בחיבור בין האמנים המובילים בישראל לבין האירועים שלכם. הנבחרת שלנו כוללת את: רביד פלוטניק, בניה ברבי, אביתר בנאי, שולי רנד, מארק אליהו ושי צברי.
+              </p>
+              <p>
+                מי אנחנו? לילך זהר ניר וגלעד קרונמן. עם שנים של ניסיון בשטח בייצוג וניהול אמנים, אנו מביאים שילוב מנצח של מקצועיות בלתי מתפשרת ויחס אישי. המטרה שלנו ברורה: להביא תרבות ומוזיקה לכל מקום – החל מוועדי עובדים וחברות הייטק, דרך משרדי ממשלה ורשויות מקומיות, ועד למוסדות אקדמיים.
               </p>
             </div>
             <div className="pt-10">
@@ -362,35 +474,99 @@ const App: React.FC = () => {
               </div>
 
               <div className="w-full lg:w-[55%] p-16 lg:p-32">
-                <form className="space-y-10" onSubmit={(e) => e.preventDefault()}>
+                <form className="space-y-10" onSubmit={handleFormSubmit}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div className="space-y-4">
-                      <label className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Full Name / שם מלא</label>
-                      <input type="text" className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold" placeholder="ישראל ישראלי" />
+                      <label htmlFor="name" className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Full Name / שם מלא</label>
+                      <input 
+                        type="text" 
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleFormChange}
+                        required
+                        className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold" 
+                        placeholder="ישראל ישראלי" 
+                      />
                     </div>
                     <div className="space-y-4">
-                      <label className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Phone / טלפון</label>
-                      <input type="tel" className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold" placeholder="050-0000000" />
+                      <label htmlFor="phone" className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Phone / טלפון</label>
+                      <input 
+                        type="tel" 
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleFormChange}
+                        required
+                        className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold" 
+                        placeholder="050-0000000" 
+                      />
                     </div>
                   </div>
                   <div className="space-y-4">
-                    <label className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Email / כתובת מייל</label>
-                    <input type="email" className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold" placeholder="example@email.com" />
+                    <label htmlFor="email" className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Email / כתובת מייל</label>
+                    <input 
+                      type="email" 
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleFormChange}
+                      required
+                      className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold" 
+                      placeholder="example@email.com" 
+                    />
                   </div>
                   <div className="space-y-4">
-                    <label className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Event Type / סוג האירוע</label>
-                    <select className="w-full bg-transparent border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold appearance-none">
+                    <label htmlFor="eventType" className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Event Type / סוג האירוע</label>
+                    <select 
+                      id="eventType"
+                      name="eventType"
+                      value={formData.eventType}
+                      onChange={handleFormChange}
+                      className="w-full bg-transparent border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold appearance-none"
+                    >
                       {Object.values(EventType).map(val => (
                         <option key={val} value={val} className="bg-black">{val}</option>
                       ))}
                     </select>
                   </div>
                   <div className="space-y-4">
-                    <label className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Message / הודעה</label>
-                    <textarea rows={3} className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold" placeholder="ספרו לנו על האירוע..."></textarea>
+                    <label htmlFor="message" className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Message / הודעה</label>
+                    <textarea 
+                      rows={3} 
+                      id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleFormChange}
+                      className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold resize-none" 
+                      placeholder="ספרו לנו על האירוע..."
+                    ></textarea>
                   </div>
-                  <button className="w-full bg-white text-black font-black py-8 rounded-2xl hover:bg-[#A8D5BA] transition-all shadow-2xl text-2xl uppercase tracking-tighter">
-                    Send Request / שלח פרטים
+                  
+                  {/* Status Message */}
+                  {submitStatus && (
+                    <div className={`p-6 rounded-2xl text-xl font-bold ${
+                      submitStatus.type === 'success' 
+                        ? 'bg-[#A8D5BA] text-black' 
+                        : 'bg-red-500/20 text-red-400 border border-red-500/50'
+                    }`}>
+                      {submitStatus.message}
+                    </div>
+                  )}
+
+                  <button 
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-white text-black font-black py-8 rounded-2xl hover:bg-[#A8D5BA] disabled:bg-gray-400 disabled:cursor-not-allowed transition-all shadow-2xl text-2xl uppercase tracking-tighter flex items-center justify-center gap-4"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="animate-spin" size={28} />
+                        <span>שולח... / Sending...</span>
+                      </>
+                    ) : (
+                      'Send Request / שלח פרטים'
+                    )}
                   </button>
                 </form>
               </div>
