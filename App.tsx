@@ -429,7 +429,7 @@ const App: React.FC = () => {
                       <div className="flex-shrink-0 bg-black p-3 sm:p-4 md:p-6 rounded-full text-[#A8D5BA] group-hover:bg-white group-hover:text-black transition-all inline-flex items-center justify-center">
                         <Mail size={24} className="sm:w-7 sm:h-7 md:w-9 md:h-9" strokeWidth={3} />
                       </div>
-                      <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-black text-black break-all">info@kedma-live.com</span>
+                      <span className="text-base sm:text-lg md:text-xl font-black text-black whitespace-nowrap">info@kedma-live.com</span>
                     </a>
                     <a href="https://wa.me/972546507710" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 sm:gap-4 md:gap-6 min-w-0 group">
                       <div className="flex-shrink-0 bg-black p-3 sm:p-4 md:p-6 rounded-full text-[#A8D5BA] group-hover:bg-white group-hover:text-black transition-all inline-flex items-center justify-center">
@@ -470,7 +470,6 @@ const App: React.FC = () => {
                         onChange={handleFormChange}
                         required
                         className="w-full min-w-0 bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-3.5 sm:py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-base sm:text-lg md:text-2xl font-bold" 
-                        placeholder="ישראל ישראלי" 
                       />
                     </div>
                     <div className="space-y-3 sm:space-y-4 min-w-0">
@@ -485,7 +484,6 @@ const App: React.FC = () => {
                         inputMode="numeric"
                         autoComplete="tel"
                         className="w-full min-w-0 bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-3.5 sm:py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-base sm:text-lg md:text-2xl font-bold" 
-                        placeholder="050-0000000" 
                       />
                     </div>
                   </div>
@@ -499,7 +497,6 @@ const App: React.FC = () => {
                       onChange={handleFormChange}
                       required
                       className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-4 sm:py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-lg sm:text-xl md:text-2xl font-bold" 
-                      placeholder="דוגמה@מייל.co.il" 
                     />
                   </div>
                   <div className="space-y-4">
@@ -525,7 +522,6 @@ const App: React.FC = () => {
                       value={formData.message}
                       onChange={handleFormChange}
                       className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-4 sm:py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-lg sm:text-xl md:text-2xl font-bold resize-none" 
-                      placeholder="ספרו לנו על האירוע..."
                     ></textarea>
                   </div>
                   
