@@ -14,28 +14,6 @@ import UpcomingShows from './components/UpcomingShows';
 import SuccessModal from './components/SuccessModal';
 import { Artist, EventType } from './types';
 import { ARTISTS_DATA } from './constants';
-import { CLIENT_CATEGORIES, getClientsByCategory, type Client } from './data/clients';
-
-function ClientLogo({ client }: { client: Client }) {
-  const [imgError, setImgError] = useState(false);
-  const logoUrl = `/logos/${client.slug}.png`;
-  return (
-    <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-black/5 min-h-[4.5rem] group">
-      {!imgError ? (
-        <img
-          src={logoUrl}
-          alt={client.name}
-          className="max-h-10 w-auto max-w-full object-contain opacity-90 group-hover:opacity-100"
-          onError={() => setImgError(true)}
-        />
-      ) : (
-        <span className="text-center text-sm font-bold text-black/80 leading-tight" dir="rtl">
-          {client.name}
-        </span>
-      )}
-    </div>
-  );
-}
 
 const App: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -397,34 +375,8 @@ const App: React.FC = () => {
 
       {/* About Section */}
       <section id="about" className="py-16 sm:py-20 md:py-24 lg:py-32 bg-[#050505] relative overflow-hidden border-y border-white/5">
-        <div className="container mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-12 md:gap-20 lg:gap-32">
-          <div className="w-full lg:w-1/2 relative">
-             <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#A8D5BA] rounded-full opacity-50 blur-3xl" />
-             <div className="relative bg-white p-10 sm:p-14 md:p-24 rounded-[2rem] sm:rounded-[3rem] text-black space-y-8 sm:space-y-12">
-                <h3 className="text-4xl sm:text-5xl md:text-6xl font-black italic tracking-tighter uppercase leading-none">הלקוחות שלנו</h3>
-                <div className="space-y-10 max-h-[70vh] overflow-y-auto pr-2">
-                  {CLIENT_CATEGORIES.map(({ id, label }) => {
-                    const clients = getClientsByCategory()[id];
-                    if (!clients?.length) return null;
-                    return (
-                      <div key={id} className="space-y-4">
-                        <p className="text-sm font-black uppercase tracking-wider text-[#7FB394]">{label}</p>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                          {clients.map((client) => (
-                            <ClientLogo key={client.slug} client={client} />
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="pt-10 border-t border-black/10">
-                  <p className="text-[#7FB394] font-black text-xl uppercase italic">EST 2020</p>
-                </div>
-             </div>
-          </div>
-          
-          <div className="w-full lg:w-1/2 space-y-8 sm:space-y-10">
+        <div className="container mx-auto px-6 relative z-10 max-w-4xl">
+          <div className="space-y-8 sm:space-y-10">
             <h2 className="text-5xl sm:text-6xl md:text-[6rem] font-black text-white leading-[0.9] tracking-tighter uppercase italic text-left" dir="ltr">Kedma Live.<br/><span className="text-[#A8D5BA]">About Us.</span></h2>
             <div className="space-y-8 text-gray-400 text-2xl leading-relaxed font-medium">
               <p>
