@@ -2,6 +2,7 @@
 import React from 'react';
 import { ArrowLeft, Camera } from 'lucide-react';
 import { Artist } from '../types';
+import { splitArtistName } from '../constants';
 
 interface ArtistCardProps {
   artist: Artist;
@@ -47,13 +48,29 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onClick }) => (
     <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 md:p-8 z-30 translate-y-2 group-hover:translate-y-0 transition-all duration-500">
       <div className="flex items-center gap-2 mb-3 sm:mb-4">
         <div className="w-8 sm:w-10 h-[2px] bg-[#A8D5BA]" />
-        <span className="text-[#A8D5BA] text-[10px] sm:text-[11px] font-black tracking-[0.15em] sm:tracking-[0.2em] uppercase">
-          {artist.englishName}
+        <span className="text-[#A8D5BA] text-[10px] sm:text-[11px] font-black tracking-[0.15em] sm:tracking-[0.2em] uppercase block">
+          {(() => {
+            const { firstName, lastName } = splitArtistName(artist.englishName);
+            return (
+              <>
+                <span className="block">{firstName}</span>
+                {lastName && <span className="block">{lastName}</span>}
+              </>
+            );
+          })()}
         </span>
       </div>
       
       <h3 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-2 sm:mb-3 group-hover:text-[#A8D5BA] transition-colors tracking-tighter leading-none uppercase italic">
-        {artist.name}
+        {(() => {
+          const { firstName, lastName } = splitArtistName(artist.name);
+          return (
+            <>
+              <span className="block">{firstName}</span>
+              {lastName && <span className="block">{lastName}</span>}
+            </>
+          );
+        })()}
       </h3>
       
       <div className="max-h-0 group-hover:max-h-40 overflow-hidden transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100">

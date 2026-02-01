@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { X, Calendar, Instagram, Music, Globe } from 'lucide-react';
 import { Artist } from '../types';
+import { splitArtistName } from '../constants';
 
 interface ArtistModalProps {
   artist: Artist | null;
@@ -87,15 +88,25 @@ const ArtistModal: React.FC<ArtistModalProps> = ({ artist, onClose }) => {
         <div className="w-full lg:w-1/2 p-6 sm:p-8 md:p-12 lg:p-20 xl:p-24 text-right rtl overflow-y-auto">
           <div className="space-y-8 sm:space-y-10 md:space-y-12">
             <div>
-              <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div className="w-10 sm:w-12 md:w-16 h-[2px] sm:h-[3px] bg-[#A8D5BA]" />
-                <span className="text-[#A8D5BA] font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase">
-                  {artist.englishName}
-                </span>
-              </div>
-              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[7rem] font-black text-white mt-2 leading-[0.8] tracking-tighter uppercase italic drop-shadow-2xl">
-                {artist.name}
-              </h2>
+              {(() => {
+                const eng = splitArtistName(artist.englishName);
+                const heb = splitArtistName(artist.name);
+                return (
+                  <>
+                    <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                      <div className="w-10 sm:w-12 md:w-16 h-[2px] sm:h-[3px] bg-[#A8D5BA]" />
+                      <span className="text-[#A8D5BA] font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase block">
+                        <span className="block">{eng.firstName}</span>
+                        {eng.lastName && <span className="block">{eng.lastName}</span>}
+                      </span>
+                    </div>
+                    <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[7rem] font-black text-white mt-2 leading-[0.8] tracking-tighter uppercase italic drop-shadow-2xl">
+                      <span className="block">{heb.firstName}</span>
+                      {heb.lastName && <span className="block">{heb.lastName}</span>}
+                    </h2>
+                  </>
+                );
+              })()}
             </div>
             
             <div className="space-y-6 sm:space-y-8 md:space-y-10">

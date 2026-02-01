@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Artist } from '../types';
+import { splitArtistName } from '../constants';
 
 interface ArtistNamesAnimationProps {
   artists: Artist[];
@@ -373,8 +374,18 @@ const ArtistNamesAnimation: React.FC<ArtistNamesAnimationProps> = ({
             animation: artist.isVisible ? 'pop-up-explode 2.5s ease-out forwards' : 'fade-out 2.5s ease-out forwards',
           }}
         >
-          <span className="text-white/70 text-lg md:text-2xl font-bold uppercase tracking-tighter whitespace-nowrap">
-            {artist.displayName}
+          <span className="text-white/70 text-lg md:text-2xl font-bold uppercase tracking-tighter text-center block">
+            {(() => {
+              const { firstName, lastName } = splitArtistName(artist.displayName);
+              return lastName ? (
+                <>
+                  <span className="block">{firstName}</span>
+                  <span className="block">{lastName}</span>
+                </>
+              ) : (
+                firstName
+              );
+            })()}
           </span>
           
           {/* Enhanced smoke particles */}

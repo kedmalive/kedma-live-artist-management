@@ -286,7 +286,7 @@ const App: React.FC = () => {
               <img
                 src={slide.src}
                 className="absolute inset-0 w-full h-full object-cover grayscale"
-                style={{ opacity: 0.6, willChange: 'opacity' }}
+                style={{ opacity: 0.8, willChange: 'opacity' }}
                 alt={`Hero Background ${index + 1}`}
                 loading="eager"
                 decoding="async"
