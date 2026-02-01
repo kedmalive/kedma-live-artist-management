@@ -360,7 +360,7 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        <div className="absolute bottom-8 sm:bottom-12 left-1/2 -translate-x-1/2 animate-bounce text-[#A8D5BA] cursor-pointer" onClick={() => scrollToSection('artists')}>
+        <div className="absolute bottom-[calc(2rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 animate-bounce text-[#A8D5BA] cursor-pointer" onClick={() => scrollToSection('artists')}>
           <ChevronDown size={40} className="sm:w-12 sm:h-12" />
         </div>
       </section>
@@ -507,9 +507,9 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              <div className="w-full lg:w-[55%] p-16 lg:p-32">
-                <form className="space-y-10" onSubmit={handleFormSubmit}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="w-full lg:w-[55%] p-8 sm:p-12 md:p-16 lg:p-32">
+                <form className="space-y-8 sm:space-y-10" onSubmit={handleFormSubmit}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
                     <div className="space-y-4">
                       <label htmlFor="name" className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">שם מלא</label>
                       <input 
@@ -519,7 +519,7 @@ const App: React.FC = () => {
                         value={formData.name}
                         onChange={handleFormChange}
                         required
-                        className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold" 
+                        className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-4 sm:py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-lg sm:text-xl md:text-2xl font-bold" 
                         placeholder="ישראל ישראלי" 
                       />
                     </div>
@@ -532,7 +532,7 @@ const App: React.FC = () => {
                         value={formData.phone}
                         onChange={handleFormChange}
                         required
-                        className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold" 
+                        className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-4 sm:py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-lg sm:text-xl md:text-2xl font-bold" 
                         placeholder="050-0000000" 
                       />
                     </div>
@@ -546,7 +546,7 @@ const App: React.FC = () => {
                       value={formData.email}
                       onChange={handleFormChange}
                       required
-                      className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold" 
+                      className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-4 sm:py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-lg sm:text-xl md:text-2xl font-bold" 
                       placeholder="דוגמה@מייל.co.il" 
                     />
                   </div>
@@ -557,7 +557,7 @@ const App: React.FC = () => {
                       name="eventType"
                       value={formData.eventType}
                       onChange={handleFormChange}
-                      className="w-full bg-transparent border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold appearance-none"
+                      className="w-full bg-transparent border-b-2 border-white/20 rounded-none px-0 py-4 sm:py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-lg sm:text-xl md:text-2xl font-bold appearance-none"
                     >
                       {Object.values(EventType).map(val => (
                         <option key={val} value={val} className="bg-black">{val}</option>
@@ -572,7 +572,7 @@ const App: React.FC = () => {
                       name="message"
                       value={formData.message}
                       onChange={handleFormChange}
-                      className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-2xl font-bold resize-none" 
+                      className="w-full bg-white/5 border-b-2 border-white/20 rounded-none px-0 py-4 sm:py-5 text-white focus:outline-none focus:border-[#A8D5BA] transition-colors text-lg sm:text-xl md:text-2xl font-bold resize-none" 
                       placeholder="ספרו לנו על האירוע..."
                     ></textarea>
                   </div>
@@ -591,7 +591,7 @@ const App: React.FC = () => {
                   <button 
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-white text-black font-black py-8 rounded-2xl hover:bg-[#A8D5BA] disabled:bg-gray-400 disabled:cursor-not-allowed transition-all shadow-2xl text-2xl uppercase tracking-tighter flex items-center justify-center gap-4"
+                    className="w-full bg-white text-black font-black py-6 sm:py-8 rounded-xl sm:rounded-2xl hover:bg-[#A8D5BA] disabled:bg-gray-400 disabled:cursor-not-allowed transition-all shadow-2xl text-lg sm:text-xl md:text-2xl uppercase tracking-tighter flex items-center justify-center gap-4"
                   >
                     {isSubmitting ? (
                       <>
@@ -610,8 +610,8 @@ const App: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black py-24 border-t border-white/5 text-center text-gray-500">
-        <div className="container mx-auto px-6 flex flex-col items-center gap-12">
+      <footer className="bg-black py-16 md:py-24 border-t border-white/5 text-center text-gray-500">
+        <div className="container mx-auto px-6 flex flex-col items-center gap-6 sm:gap-12">
            <div className="text-5xl font-black tracking-tighter text-white uppercase italic">
             KEDMA<span className="text-[#A8D5BA]">LIVE</span>
           </div>

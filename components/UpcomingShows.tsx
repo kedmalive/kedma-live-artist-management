@@ -13,21 +13,6 @@ function formatShowDate(iso: string): string {
   });
 }
 
-function formatMonthYear(date: Date): string {
-  return date.toLocaleDateString('he-IL', {
-    month: 'long',
-    year: 'numeric',
-  });
-}
-
-function getMonthStart(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), 1);
-}
-
-function getMonthEnd(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
-}
-
 // Parse CSV string to array of objects
 function parseCSV(csvText: string): UpcomingShow[] {
   const lines = csvText.trim().split('\n');
@@ -86,14 +71,13 @@ function parseCSV(csvText: string): UpcomingShow[] {
   return shows;
 }
 
+const SHOWS_PER_PAGE = 6;
+
 const UpcomingShows: React.FC = () => {
   const [shows, setShows] = useState<UpcomingShow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentMonth, setCurrentMonth] = useState<Date>(() => {
-    const now = new Date();
-    return new Date(now.getFullYear(), now.getMonth(), 1);
-  });
+  const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -166,85 +150,83 @@ const UpcomingShows: React.FC = () => {
     };
   }, []);
 
-  const visibleShows = useMemo(() => {
+  const allUpcoming = useMemo(() => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
-    
-    const monthStart = getMonthStart(currentMonth);
-    const monthEnd = getMonthEnd(currentMonth);
-    
+
     const valid = shows.filter((s) => {
       if (!s || typeof s.date !== 'string' || typeof s.artist !== 'string' || typeof s.location !== 'string') {
         return false;
       }
-      
       const showDate = new Date(s.date);
       if (Number.isNaN(showDate.getTime())) return false;
-      
-      // Remove past dates
       if (showDate < now) return false;
-      
-      // Filter by current month
-      return showDate >= monthStart && showDate <= monthEnd;
+      return true;
     });
-    
+
     valid.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     return valid;
-  }, [shows, currentMonth]);
+  }, [shows]);
 
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    setCurrentMonth((prev) => {
-      const newDate = new Date(prev);
-      if (direction === 'next') {
-        newDate.setMonth(newDate.getMonth() + 1);
-      } else {
-        newDate.setMonth(newDate.getMonth() - 1);
-      }
-      return newDate;
+  const totalPages = Math.max(1, Math.ceil(allUpcoming.length / SHOWS_PER_PAGE));
+  const pageIndex = Math.min(currentPage, totalPages - 1);
+  const visibleShows = useMemo(
+    () => allUpcoming.slice(pageIndex * SHOWS_PER_PAGE, (pageIndex + 1) * SHOWS_PER_PAGE),
+    [allUpcoming, pageIndex]
+  );
+
+  const goToPage = (dir: 'prev' | 'next') => {
+    setCurrentPage((p) => {
+      if (dir === 'next') return Math.min(p + 1, totalPages - 1);
+      return Math.max(0, p - 1);
     });
   };
 
   return (
-    <section id="upcoming-shows" className="py-32 bg-[#050505] relative overflow-hidden border-y border-white/5">
+    <section id="upcoming-shows" className="py-16 sm:py-20 md:py-24 lg:py-32 bg-[#050505] relative overflow-hidden border-y border-white/5">
       <div className="container mx-auto px-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 mb-16">
-          <div className="space-y-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 sm:gap-10 mb-12 sm:mb-16">
+          <div className="space-y-4 sm:space-y-6">
             <div className="flex items-center gap-4">
               <div className="w-20 h-2 bg-[#A8D5BA]" />
-              <h2 className="text-6xl md:text-[6rem] font-black text-white leading-none tracking-tighter uppercase italic">
+              <h2 className="text-5xl sm:text-6xl md:text-[6rem] font-black text-white leading-none tracking-tighter uppercase italic">
                 Upcoming
               </h2>
             </div>
-            <p className="text-gray-400 text-2xl max-w-3xl font-bold">
+            <p className="text-gray-400 text-xl sm:text-2xl max-w-3xl font-bold">
               הופעות קרובות של אמני קדמא לייב
             </p>
           </div>
         </div>
 
-        {/* Month Navigation */}
-        <div className="flex items-center justify-between mb-12">
-          <button
-            onClick={() => navigateMonth('prev')}
-            className="flex items-center gap-3 text-[#A8D5BA] hover:text-white transition-colors font-black text-lg uppercase tracking-tighter group"
-          >
-            <ChevronRight size={24} className="group-hover:translate-x-1 transition-transform" />
-            חודש קודם
-          </button>
-          
-          <div className="text-center">
-            <h3 className="text-4xl md:text-5xl font-black text-white uppercase italic tracking-tighter">
-              {formatMonthYear(currentMonth)}
-            </h3>
+        {/* Page Navigation - show only when there are more than 6 shows */}
+        {!loading && !error && allUpcoming.length > SHOWS_PER_PAGE && (
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-10 sm:mb-12">
+            <button
+              onClick={() => goToPage('prev')}
+              disabled={pageIndex === 0}
+              className="flex items-center gap-2 sm:gap-3 text-[#A8D5BA] hover:text-white transition-colors font-black text-sm sm:text-base md:text-lg uppercase tracking-tighter group disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-[#A8D5BA] order-2 sm:order-1"
+            >
+              <ChevronRight size={20} className="sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform shrink-0" />
+              הקודם
+            </button>
+
+            <div className="text-center order-1 sm:order-2 flex-1 min-w-0">
+              <span className="text-gray-400 font-bold text-lg md:text-xl">
+                עמוד {pageIndex + 1} מתוך {totalPages}
+              </span>
+            </div>
+
+            <button
+              onClick={() => goToPage('next')}
+              disabled={pageIndex >= totalPages - 1}
+              className="flex items-center gap-2 sm:gap-3 text-[#A8D5BA] hover:text-white transition-colors font-black text-sm sm:text-base md:text-lg uppercase tracking-tighter group disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-[#A8D5BA] order-3"
+            >
+              הבא
+              <ChevronLeft size={20} className="sm:w-6 sm:h-6 group-hover:-translate-x-1 transition-transform shrink-0" />
+            </button>
           </div>
-          
-          <button
-            onClick={() => navigateMonth('next')}
-            className="flex items-center gap-3 text-[#A8D5BA] hover:text-white transition-colors font-black text-lg uppercase tracking-tighter group"
-          >
-            חודש הבא
-            <ChevronLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
-          </button>
-        </div>
+        )}
 
         {loading && (
           <div className="glass rounded-[2rem] p-10 border border-white/10">
@@ -263,10 +245,10 @@ const UpcomingShows: React.FC = () => {
           </div>
         )}
 
-        {!loading && !error && visibleShows.length === 0 && (
+        {!loading && !error && allUpcoming.length === 0 && (
           <div className="glass rounded-[2rem] p-10 border border-white/10">
             <div className="text-white font-black text-2xl mb-3">
-              אין הופעות בחודש {formatMonthYear(currentMonth)}
+              אין הופעות קרובות כרגע
             </div>
             <div className="text-gray-400 font-medium text-lg">
               {import.meta.env.VITE_UPCOMING_SHOWS_CSV_URL 

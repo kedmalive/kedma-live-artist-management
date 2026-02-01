@@ -28,5 +28,29 @@
     "artist": "רביד פלוטניק",
     "location": "גבעת ברנר",
     "ticketsUrl": ""
+  },
+  {
+    "date": "2026-02-05",
+    "artist": "אביתר בנאי",
+    "location": "היכל התרבות נתניה",
+    "ticketsUrl": ""
+  },
+  {
+    "date": "2026-02-12",
+    "artist": "דודו טסה",
+    "location": "בריכת רמז חיפה",
+    "ticketsUrl": ""
+  },
+  {
+    "date": "2026-02-18",
+    "artist": "בניה ברבי",
+    "location": "אמפי וואהל ירושלים",
+    "ticketsUrl": ""
+  },
+  {
+    "date": "2026-03-01",
+    "artist": "שולי רנד",
+    "location": "זאפה תל אביב",
+    "ticketsUrl": ""
   }
 ]

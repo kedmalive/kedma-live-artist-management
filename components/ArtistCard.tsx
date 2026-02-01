@@ -44,8 +44,8 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onClick }) => (
       </div>
     )}
 
-    {/* Content Layer - Positioned for maximum readability */}
-    <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 md:p-8 z-30 translate-y-2 group-hover:translate-y-0 transition-all duration-500">
+    {/* Content Layer - Positioned for maximum readability. On mobile, description + CTA always visible (no hover). */}
+    <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 md:p-8 z-30 translate-y-0 sm:translate-y-2 sm:group-hover:translate-y-0 transition-all duration-500">
       <div className="flex items-center gap-2 mb-3 sm:mb-4">
         <div className="w-8 sm:w-10 h-[2px] bg-[#A8D5BA]" />
         <span className="text-[#A8D5BA] text-[10px] sm:text-[11px] font-black tracking-[0.15em] sm:tracking-[0.2em] uppercase block">
@@ -73,7 +73,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onClick }) => (
         })()}
       </h3>
       
-      <div className="max-h-0 group-hover:max-h-40 overflow-hidden transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100">
+      <div className="max-h-40 opacity-100 sm:max-h-0 sm:opacity-0 sm:group-hover:max-h-40 sm:group-hover:opacity-100 overflow-hidden transition-all duration-700 ease-in-out">
         <p className="text-white/80 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 line-clamp-2 font-medium">
           {artist.description}
         </p>

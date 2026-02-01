@@ -24,7 +24,7 @@ const Navigation: React.FC<NavigationProps> = ({ isScrolled, scrollToSection }) 
   // #endregion
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-500 ${isScrolled ? 'bg-black/90 backdrop-blur-xl py-2 sm:py-3 shadow-2xl border-b border-white/5' : 'bg-transparent py-4 sm:py-6'}`}>
+    <nav className={`fixed w-full z-50 transition-all duration-500 ${isScrolled ? 'bg-black/90 backdrop-blur-xl pt-[calc(0.5rem+env(safe-area-inset-top))] pb-2 sm:pb-3 shadow-2xl border-b border-white/5' : 'bg-transparent pt-[calc(1rem+env(safe-area-inset-top))] pb-4 sm:pb-6'}`}>
       <div className="container mx-auto px-4 sm:px-6 flex justify-between items-center">
         <div 
           className="text-lg sm:text-xl md:text-2xl font-black tracking-tighter text-white cursor-pointer group flex items-center gap-1.5 sm:gap-2" 
