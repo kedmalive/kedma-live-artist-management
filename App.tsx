@@ -377,7 +377,7 @@ const App: React.FC = () => {
       <section id="about" className="py-16 sm:py-20 md:py-24 lg:py-32 bg-[#050505] relative overflow-hidden border-y border-white/5">
         <div className="container mx-auto px-6 relative z-10 max-w-4xl">
           <div className="space-y-8 sm:space-y-10">
-            <h2 className="text-5xl sm:text-6xl md:text-[6rem] font-black text-white leading-[0.9] tracking-tighter uppercase italic text-left" dir="ltr">Kedma Live.<br/><span className="text-[#A8D5BA]">About Us.</span></h2>
+            <h2 className="text-5xl sm:text-6xl md:text-[6rem] font-black text-white leading-[0.9] tracking-tighter uppercase italic text-center" dir="ltr">Kedma Live.<br/><span className="text-[#A8D5BA]">About Us.</span></h2>
             <div className="space-y-8 text-gray-400 text-2xl leading-relaxed font-medium">
               <p>
                 <span className="text-white font-black">קדמא לייב: הבית של המוזיקה הישראלית</span>
