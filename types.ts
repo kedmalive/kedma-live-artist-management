@@ -10,6 +10,7 @@ export interface Artist {
   fullDetails: string;
   website?: string;
   spotifyUrl?: string;
+  instagramUrl?: string;
 }
 
 export enum EventType {

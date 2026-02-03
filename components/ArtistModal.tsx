@@ -67,9 +67,21 @@ const ArtistModal: React.FC<ArtistModalProps> = ({ artist, onClose }) => {
                   <Music size={20} className="sm:w-6 sm:h-6 md:w-7 md:h-7" />
                 </button>
               )}
-              <button className="bg-white/10 backdrop-blur-xl p-3 sm:p-4 md:p-5 rounded-full text-white hover:bg-[#A8D5BA] hover:text-black transition-all border border-white/10">
-                <Instagram size={20} className="sm:w-6 sm:h-6 md:w-7 md:h-7" />
-              </button>
+              {artist.instagramUrl ? (
+                <a
+                  href={artist.instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white/10 backdrop-blur-xl p-3 sm:p-4 md:p-5 rounded-full text-white hover:bg-[#A8D5BA] hover:text-black transition-all border border-white/10"
+                  title="עמוד Instagram"
+                >
+                  <Instagram size={20} className="sm:w-6 sm:h-6 md:w-7 md:h-7" />
+                </a>
+              ) : (
+                <button className="bg-white/10 backdrop-blur-xl p-3 sm:p-4 md:p-5 rounded-full text-white hover:bg-[#A8D5BA] hover:text-black transition-all border border-white/10" disabled title="אין קישור ל-Instagram">
+                  <Instagram size={20} className="sm:w-6 sm:h-6 md:w-7 md:h-7" />
+                </button>
+              )}
               {artist.website && (
                 <a
                   href={artist.website}
