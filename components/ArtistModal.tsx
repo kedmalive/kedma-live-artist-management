@@ -40,7 +40,7 @@ const ArtistModal: React.FC<ArtistModalProps> = ({ artist, onClose }) => {
           <img 
             src={artist.image} 
             alt={artist.name} 
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105" 
+            className="absolute inset-0 w-full h-full object-cover object-top md:object-center transition-transform duration-[2000ms] group-hover:scale-105" 
             onError={(e) => {
               (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=800';
             }}

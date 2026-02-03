@@ -14,13 +14,12 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onClick }) => (
     className="group relative h-[450px] sm:h-[500px] md:h-[550px] w-full rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer shadow-2xl transition-all duration-700 hover:-translate-y-4 hover:shadow-[#A8D5BA]/40 bg-[#0a0a0a] border border-white/5"
     onClick={() => onClick(artist)}
   >
-    {/* Base Image Layer - Centered to ensure faces are visible */}
+    {/* Base Image Layer - Top-aligned so faces/heads are not cut off on mobile */}
     <img 
       src={artist.image} 
       alt={`${artist.name} - ${artist.category} | ${artist.englishName} - קדמא לייב ייצוג אמנים`}
       title={`${artist.name} - ${artist.description}`}
-      className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 group-hover:scale-110"
-      style={{ objectPosition: 'center 20%' }}
+      className="absolute inset-0 w-full h-full object-cover object-top md:object-[center_20%] transition-all duration-1000 group-hover:scale-110"
       loading="lazy"
       onError={(e) => {
         console.error(`Failed to load image: ${artist.image}`, e);
