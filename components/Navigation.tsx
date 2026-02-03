@@ -59,9 +59,17 @@ const Navigation: React.FC<NavigationProps> = ({ isScrolled, scrollToSection }) 
         </button>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Overlay - glass background for readability over page content */}
       {isOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-black/98 backdrop-blur-3xl border-t border-white/10 p-6 sm:p-8 md:p-10 flex flex-col gap-6 sm:gap-8 items-center shadow-2xl animate-fade-in">
+        <div 
+          className="md:hidden absolute top-full left-0 w-full min-h-[50vh] p-6 sm:p-8 md:p-10 flex flex-col gap-6 sm:gap-8 items-center shadow-2xl animate-fade-in border-t border-white/10"
+          style={{
+            background: 'rgba(0, 0, 0, 0.92)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.08)',
+          }}
+        >
           {navLinks.map((link) => (
             <button 
               key={link.name} 
@@ -69,7 +77,7 @@ const Navigation: React.FC<NavigationProps> = ({ isScrolled, scrollToSection }) 
                 scrollToSection(link.target);
                 setIsOpen(false);
               }}
-              className="text-2xl sm:text-3xl text-white/90 font-black hover:text-[#A8D5BA] transition-colors uppercase"
+              className="text-2xl sm:text-3xl text-white font-black hover:text-[#A8D5BA] transition-colors uppercase"
             >
               {link.name}
             </button>
