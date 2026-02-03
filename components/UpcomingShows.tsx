@@ -182,6 +182,48 @@ const UpcomingShows: React.FC = () => {
     });
   };
 
+  // Inject Event Structured Data (JSON-LD) for SEO / Rich Results
+  useEffect(() => {
+    if (allUpcoming.length === 0) return;
+
+    const events = allUpcoming.map((show) => {
+      const d = new Date(show.date);
+      const startDate = Number.isNaN(d.getTime()) ? show.date : d.toISOString().slice(0, 16);
+      return {
+        '@type': 'Event',
+        name: `${show.artist} - ${show.location}`,
+        startDate,
+        location: {
+          '@type': 'Place',
+          name: show.location,
+          address: show.location,
+        },
+        performer: {
+          '@type': 'Person',
+          name: show.artist,
+        },
+        ...(show.ticketsUrl ? { url: show.ticketsUrl } : {}),
+      };
+    });
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'upcoming-shows-events-ld';
+    script.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@graph': events,
+    });
+
+    const existing = document.getElementById(script.id);
+    if (existing) existing.remove();
+    document.head.appendChild(script);
+
+    return () => {
+      const el = document.getElementById(script.id);
+      if (el) el.remove();
+    };
+  }, [allUpcoming]);
+
   return (
     <section id="upcoming-shows" className="py-16 sm:py-20 md:py-24 lg:py-32 bg-[#050505] relative overflow-hidden border-y border-white/5">
       <div className="container mx-auto px-6">
