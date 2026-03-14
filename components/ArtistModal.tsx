@@ -39,6 +39,8 @@ const ArtistModal: React.FC<ArtistModalProps> = ({ artist, onClose }) => {
         <div className="w-full lg:w-1/2 h-[250px] sm:h-[300px] md:h-[350px] lg:h-auto relative overflow-hidden group">
           <img 
             src={artist.image} 
+            width={800}
+            height={600}
             alt={artist.name} 
             className="absolute inset-0 w-full h-full object-cover object-top md:object-center transition-transform duration-[2000ms] group-hover:scale-105" 
             onError={(e) => {

@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+@theme {
+  --font-heebo: 'Heebo', sans-serif;
+  --color-brand: #A8D5BA;
+  --color-brand-light: #B5E5CF;
+  --color-brand-dark: #7FB394;
+}
+
+body {
+  font-family: var(--font-heebo);
+  background-color: #000;
+  color: #fff;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.amber-glow {
+  box-shadow: 0 0 30px rgba(168, 213, 186, 0.2);
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+@keyframes pop-up-explode {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+  30% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  100% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+}
+
+@keyframes smoke-fade-out {
+  0% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: translate(calc(-50% + var(--smoke-end-x, 0) * 0.5), calc(-50% + var(--smoke-end-y, 0) * 0.5)) scale(0.6);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--smoke-end-x, 0)), calc(-50% + var(--smoke-end-y, 0))) scale(0.1);
+  }
+}
+
+.artist-name-popup {
+  will-change: transform, opacity;
+}
+
+.artist-name-popup span {
+  text-shadow:
+    0 0 8px rgba(168, 213, 186, 0.4),
+    0 0 15px rgba(168, 213, 186, 0.25),
+    0 0 25px rgba(168, 213, 186, 0.15);
+  transition: all 0.5s ease;
+  display: inline-block;
+}
+
+/* Screen-reader only - for SEO Hebrew text in headings */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.smoke-particle {
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(
+    circle,
+    rgba(168, 213, 186, 0.4) 0%,
+    rgba(255, 255, 255, 0.2) 30%,
+    rgba(255, 255, 255, 0.1) 60%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  opacity: 0;
+  animation: smoke-fade-out ease-out forwards;
+  will-change: transform, opacity;
+  filter: blur(4px);
+  pointer-events: none;
+}

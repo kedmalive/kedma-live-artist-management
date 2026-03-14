@@ -232,7 +232,7 @@ const UpcomingShows: React.FC = () => {
             <div className="flex items-center gap-4">
               <div className="w-20 h-2 bg-[#A8D5BA]" />
               <h2 className="text-5xl sm:text-6xl md:text-[6rem] font-black text-white leading-none tracking-tighter uppercase italic">
-                Upcoming
+                <span className="sr-only">הופעות קרובות </span>Upcoming
               </h2>
             </div>
             <p className="text-gray-400 text-xl sm:text-2xl max-w-3xl font-bold">
@@ -293,9 +293,7 @@ const UpcomingShows: React.FC = () => {
               אין הופעות קרובות כרגע
             </div>
             <div className="text-gray-400 font-medium text-lg">
-              {import.meta.env.VITE_UPCOMING_SHOWS_CSV_URL 
-                ? 'עדכן את Google Sheets והופעות יופיעו כאן אוטומטית.'
-                : 'כדי להוסיף הופעות: הגדר VITE_UPCOMING_SHOWS_CSV_URL ב-Vercel או ערוך את הקובץ data/upcoming-shows.json'}
+              בקרוב נפרסם לוח הופעות חדש
             </div>
           </div>
         )}

@@ -40,9 +40,6 @@ export default async function handler(req: any, res: any) {
     hasBaseId: !!baseId,
     hasTable: !!tableIdOrName,
     hasViewName: !!viewName,
-    baseId: baseId,
-    tableIdOrName: tableIdOrName,
-    viewName: viewName,
   });
 
   if (!token || !baseId || !tableIdOrName || !viewName) {
@@ -74,12 +71,7 @@ export default async function handler(req: any, res: any) {
     url.searchParams.set("view", viewName);
     url.searchParams.set("pageSize", "50");
 
-    console.log('[API] Fetching from Airtable:', {
-      url: url.toString(),
-      baseId,
-      tableIdOrName,
-      viewName,
-    });
+    console.log('[API] Fetching from Airtable');
 
     // Step 1: Make request to Airtable
     const airtableRes = await fetch(url.toString(), {
@@ -120,41 +112,13 @@ export default async function handler(req: any, res: any) {
       hasOffset: !!data.offset,
     });
 
-    // Step 1: Log first record structure (if exists)
-    if (data.records && data.records.length > 0) {
-      const firstRecord = data.records[0];
-      console.log('[API] First record structure:', {
-        id: firstRecord.id,
-        createdTime: firstRecord.createdTime,
-        fieldNames: Object.keys(firstRecord.fields || {}),
-        fieldCount: Object.keys(firstRecord.fields || {}).length,
-      });
-      
-      // Log all field names and their types
-      const fieldInfo: Record<string, { type: string; value: unknown }> = {};
-      Object.keys(firstRecord.fields || {}).forEach(key => {
-        const value = firstRecord.fields[key];
-        fieldInfo[key] = {
-          type: typeof value,
-          value: value,
-        };
-      });
-      console.log('[API] First record fields detail:', JSON.stringify(fieldInfo, null, 2));
-    }
-
-    // Step 1: Return raw data (no processing yet)
     res.statusCode = 200;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate=300");
-    
-    // Return both raw data and processed info for debugging
     res.end(JSON.stringify({
       success: true,
       recordCount: data.records?.length || 0,
       records: data.records || [],
-      debug: {
-        firstRecordFields: data.records?.[0]?.fields ? Object.keys(data.records[0].fields) : null,
-      },
     }));
   } catch (err: any) {
     console.error('[API] Unexpected error:', err);
@@ -164,7 +128,6 @@ export default async function handler(req: any, res: any) {
       JSON.stringify({
         error: "Unexpected server error",
         message: err?.message || String(err),
-        stack: process.env.NODE_ENV === 'development' ? err?.stack : undefined,
       })
     );
   }

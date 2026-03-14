@@ -29,18 +29,14 @@ const App: React.FC = () => {
     phone: '',
     email: '',
     eventType: EventType.CORPORATE,
-    message: ''
+    message: '',
+    website: '' // Honeypot: bots fill this, humans leave empty (hidden)
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{type: 'success' | 'error', message: string} | null>(null);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [submittedUserName, setSubmittedUserName] = useState<string>('');
-  
-  // #region agent log
-  useEffect(() => {
-    fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:22',message:'App mounted',data:{windowWidth:window.innerWidth,windowHeight:window.innerHeight,userAgent:navigator.userAgent},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-  }, []);
-  // #endregion
+  const [submitThrottleUntil, setSubmitThrottleUntil] = useState<number | null>(null);
 
   // Initialize EmailJS once on component mount
   useEffect(() => {
@@ -183,7 +179,12 @@ const App: React.FC = () => {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    // Honeypot: reject if bot filled the hidden field
+    if (formData.website.trim()) {
+      return;
+    }
+
     // Basic validation
     if (!formData.name.trim() || !formData.email.trim() || !formData.phone.trim()) {
       setSubmitStatus({
@@ -199,6 +200,17 @@ const App: React.FC = () => {
       setSubmitStatus({
         type: 'error',
         message: 'כתובת מייל לא תקינה'
+      });
+      return;
+    }
+
+    // Israeli phone: 9 digits (after stripping 0 or 972 prefix), first digit 2–9
+    const phoneDigits = formData.phone.replace(/\D/g, '');
+    const normalized = phoneDigits.replace(/^972/, '').replace(/^0/, '');
+    if (normalized.length !== 9 || !/^[2-9]\d{8}$/.test(normalized)) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'מספר טלפון לא תקין. אנא הזן מספר ישראלי בן 9–10 ספרות'
       });
       return;
     }
@@ -228,10 +240,21 @@ const App: React.FC = () => {
 
       // 2. Save user name before resetting form
       const submittedName = formData.name;
-      
-      // 3. Open WhatsApp with pre-filled message
-      const whatsappMessage = `שלום, אני ${formData.name}%0A%0Aפרטי קשר:%0Aטלפון: ${formData.phone}%0Aמייל: ${formData.email}%0A%0Aסוג האירוע: ${formData.eventType}%0A%0A${formData.message ? `הודעה: ${formData.message}` : ''}`;
-      const whatsappUrl = `https://wa.me/972546507710?text=${whatsappMessage}`;
+
+      // 3. Open WhatsApp with pre-filled message (encode all user input to prevent URL injection)
+      const parts = [
+        `שלום, אני ${formData.name}`,
+        '',
+        'פרטי קשר:',
+        `טלפון: ${formData.phone}`,
+        `מייל: ${formData.email}`,
+        '',
+        `סוג האירוע: ${formData.eventType}`,
+        '',
+        formData.message ? `הודעה: ${formData.message}` : '',
+      ].filter(Boolean);
+      const whatsappMessage = parts.join('\n');
+      const whatsappUrl = `https://wa.me/972546507710?text=${encodeURIComponent(whatsappMessage)}`;
       window.open(whatsappUrl, '_blank');
 
       // 4. Reset form
@@ -240,13 +263,17 @@ const App: React.FC = () => {
         phone: '',
         email: '',
         eventType: EventType.CORPORATE,
-        message: ''
+        message: '',
+        website: '',
       });
 
-      // 5. Show success modal with user name
+      // 5. Throttle: disable submit for 30 seconds to limit abuse
+      setSubmitThrottleUntil(Date.now() + 30_000);
+      setTimeout(() => setSubmitThrottleUntil(null), 30_000);
+
+      // 6. Show success modal with user name
       setSubmittedUserName(submittedName);
       setIsSuccessModalOpen(true);
-
     } catch (error) {
       console.error('Error sending form:', error);
       setSubmitStatus({
@@ -270,6 +297,7 @@ const App: React.FC = () => {
     >
       <Navigation isScrolled={isScrolled} scrollToSection={scrollToSection} />
 
+      <main>
       {/* Hero Section */}
       <section id="hero" className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Cinematic Background with Sliding Images */}
@@ -285,6 +313,8 @@ const App: React.FC = () => {
             >
               <img
                 src={slide.src}
+                width={1920}
+                height={1080}
                 className="absolute inset-0 w-full h-full object-cover grayscale"
                 style={{ opacity: 0.8, willChange: 'opacity' }}
                 alt={`Hero Background ${index + 1}`}
@@ -350,7 +380,7 @@ const App: React.FC = () => {
             <div className="space-y-4 sm:space-y-6">
               <div className="flex items-center gap-4">
                 <div className="w-20 h-2 bg-[#A8D5BA]" />
-                <h2 className="text-5xl sm:text-6xl md:text-7xl md:text-[8rem] font-black text-white leading-none tracking-tighter uppercase italic">Lineup</h2>
+                <h2 className="text-5xl sm:text-6xl md:text-7xl md:text-[8rem] font-black text-white leading-none tracking-tighter uppercase italic"><span className="sr-only">נבחרת האמנים </span>Lineup</h2>
               </div>
               <p className="text-gray-400 text-xl sm:text-2xl max-w-2xl font-bold">
                 נבחרת האמנים של קדמא לייב
@@ -377,7 +407,7 @@ const App: React.FC = () => {
       <section id="about" className="py-16 sm:py-20 md:py-24 lg:py-32 bg-[#050505] relative overflow-hidden border-y border-white/5">
         <div className="container mx-auto px-6 relative z-10 max-w-4xl">
           <div className="space-y-8 sm:space-y-10">
-            <h2 className="text-5xl sm:text-6xl md:text-[6rem] font-black text-white leading-[0.9] tracking-tighter uppercase italic text-center" dir="ltr">Kedma Live.<br/><span className="text-[#A8D5BA]">About Us.</span></h2>
+            <h2 className="text-5xl sm:text-6xl md:text-[6rem] font-black text-white leading-[0.9] tracking-tighter uppercase italic text-center" dir="ltr"><span className="sr-only">אודות קדמא לייב </span>Kedma Live.<br/><span className="text-[#A8D5BA]">About Us.</span></h2>
             <div className="space-y-8 text-gray-400 text-2xl leading-relaxed font-medium">
               <p>
                 <span className="text-white font-black">קדמא לייב: הבית של המוזיקה הישראלית</span>
@@ -406,7 +436,7 @@ const App: React.FC = () => {
               <div className="w-full lg:w-[45%] bg-[#A8D5BA] p-8 sm:p-12 md:p-20 lg:p-32 flex flex-col justify-between relative overflow-hidden">
                 <div className="relative z-10 space-y-10 sm:space-y-16">
                   <div className="space-y-4 sm:space-y-6">
-                    <h3 className="text-4xl sm:text-5xl md:text-6xl lg:text-9xl font-black italic uppercase leading-none text-black tracking-tighter">Book<br/>Now</h3>
+                    <h3 className="text-4xl sm:text-5xl md:text-6xl lg:text-9xl font-black italic uppercase leading-none text-black tracking-tighter"><span className="sr-only">הזמנת מופע </span>Book<br/>Now</h3>
                     <p className="text-black/80 text-xl sm:text-2xl font-bold italic tracking-tight">נבנה לכם את המופע המושלם.</p>
                   </div>
                   
@@ -448,7 +478,7 @@ const App: React.FC = () => {
                 </div>
 
                 <div className="flex gap-8 mt-20 relative z-10">
-                  <a href="#" className="bg-black text-white p-6 rounded-full hover:bg-white hover:text-black transition-all">
+                  <a href="https://www.facebook.com/kedmalive" target="_blank" rel="noopener noreferrer" className="bg-black text-white p-6 rounded-full hover:bg-white hover:text-black transition-all" aria-label="פייסבוק קדמא לייב">
                     <Facebook size={32} />
                   </a>
                   <a href="https://www.instagram.com/kedmalive?igsh=a3UyNDFnMzNkZ2lr" target="_blank" rel="noopener noreferrer" className="bg-black text-white p-6 rounded-full hover:bg-white hover:text-black transition-all">
@@ -459,6 +489,19 @@ const App: React.FC = () => {
 
               <div className="w-full lg:w-[55%] p-8 sm:p-12 md:p-16 lg:p-32">
                 <form className="space-y-8 sm:space-y-10" onSubmit={handleFormSubmit}>
+                  {/* Honeypot: hidden from users, bots fill it — do not focus or announce */}
+                  <div className="absolute -left-[9999px] opacity-0 h-0 overflow-hidden" aria-hidden="true">
+                    <label htmlFor="website">אתר (אל תמלא)</label>
+                    <input
+                      type="text"
+                      id="website"
+                      name="website"
+                      value={formData.website}
+                      onChange={handleFormChange}
+                      tabIndex={-1}
+                      autoComplete="off"
+                    />
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-10 min-w-0">
                     <div className="space-y-3 sm:space-y-4 min-w-0">
                       <label htmlFor="name" className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">שם מלא</label>
@@ -538,7 +581,7 @@ const App: React.FC = () => {
 
                   <button 
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || (submitThrottleUntil != null && Date.now() < submitThrottleUntil)}
                     className="w-full bg-white text-black font-black py-6 sm:py-8 rounded-xl sm:rounded-2xl hover:bg-[#A8D5BA] disabled:bg-gray-400 disabled:cursor-not-allowed transition-all shadow-2xl text-lg sm:text-xl md:text-2xl uppercase tracking-tighter flex items-center justify-center gap-4"
                   >
                     {isSubmitting ? (
@@ -556,6 +599,7 @@ const App: React.FC = () => {
           </div>
         </div>
       </section>
+      </main>
 
       {/* Footer */}
       <footer className="bg-black py-16 md:py-24 border-t border-white/5 text-center text-gray-500">
@@ -564,26 +608,29 @@ const App: React.FC = () => {
             KEDMA<span className="text-[#A8D5BA]">LIVE</span>
           </div>
           <div className="flex flex-wrap justify-center gap-12 text-sm font-black uppercase tracking-[0.2em]">
-            <button 
-              onClick={() => setIsAccessibilityStatementOpen(true)}
+            <a 
+              href="#accessibility-statement" 
+              onClick={(e) => { e.preventDefault(); setIsAccessibilityStatementOpen(true); }}
               className="hover:text-[#A8D5BA] transition-colors"
             >
               Accessibility / נגישות
-            </button>
-            <button 
-              onClick={() => setIsPrivacyPolicyOpen(true)}
+            </a>
+            <a 
+              href="#privacy-policy" 
+              onClick={(e) => { e.preventDefault(); setIsPrivacyPolicyOpen(true); }}
               className="hover:text-[#A8D5BA] transition-colors"
             >
               Privacy / פרטיות
-            </button>
-            <button 
-              onClick={() => setIsTermsOfUseOpen(true)}
+            </a>
+            <a 
+              href="#terms-of-use" 
+              onClick={(e) => { e.preventDefault(); setIsTermsOfUseOpen(true); }}
               className="hover:text-[#A8D5BA] transition-colors"
             >
               Terms / תקנון
-            </button>
+            </a>
           </div>
-          <p className="text-xs opacity-40 font-bold uppercase tracking-[0.5em]">© 2024 Kedma Live Agency. Excellence Defined.</p>
+          <p className="text-xs opacity-40 font-bold tracking-[0.2em]">כל הזכויות שמורות לקדמא לייב בע״מ 2026</p>
         </div>
       </footer>
 

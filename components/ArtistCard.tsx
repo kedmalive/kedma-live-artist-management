@@ -17,6 +17,8 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onClick }) => (
     {/* Base Image Layer - Top-aligned so faces/heads are not cut off on mobile */}
     <img 
       src={artist.image} 
+      width={400}
+      height={550}
       alt={`${artist.name} - ${artist.category} | ${artist.englishName} - קדמא לייב ייצוג אמנים`}
       title={`${artist.name} - ${artist.description}`}
       className="absolute inset-0 w-full h-full object-cover object-top md:object-[center_20%] transition-all duration-1000 group-hover:scale-110"

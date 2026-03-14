@@ -26,6 +26,13 @@ fi
 echo "➕ מוסיף שינויים..."
 git add .
 
+# Safety: abort if any .env file was staged (should be in .gitignore)
+if git diff --cached --name-only | grep -q '^\.env'; then
+    echo "❌ ביטול: קובץ .env הופיע ברשימת הקבצים. וודא ש-.gitignore מעודכן."
+    git reset HEAD
+    exit 1
+fi
+
 # צור commit
 echo "💾 יוצר commit..."
 git commit -m "$1"

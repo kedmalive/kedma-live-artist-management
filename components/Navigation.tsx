@@ -16,12 +16,6 @@ const Navigation: React.FC<NavigationProps> = ({ isScrolled, scrollToSection }) 
     { name: 'אודות', target: 'about' },
     { name: 'צור קשר', target: 'contact' },
   ];
-  
-  // #region agent log
-  React.useEffect(() => {
-    fetch('http://127.0.0.1:7242/ingest/004958b9-08d1-47da-aa9a-7c8783b1ed05',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Navigation.tsx:20',message:'Navigation state change',data:{isOpen,isScrolled,windowWidth:window.innerWidth},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4'})}).catch(()=>{});
-  }, [isOpen, isScrolled]);
-  // #endregion
 
   return (
     <nav className={`fixed w-full z-50 transition-all duration-500 ${isScrolled ? 'bg-black/90 backdrop-blur-xl pt-[calc(0.5rem+env(safe-area-inset-top))] pb-2 sm:pb-3 shadow-2xl border-b border-white/5' : 'bg-transparent pt-[calc(1rem+env(safe-area-inset-top))] pb-4 sm:pb-6'}`}>
