@@ -7,10 +7,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/jpeg" href="/ero-background.jpg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="preload" as="image" href="/ero-background.jpg" />
     <link rel="alternate" hreflang="he" href="https://kedma-live.com/" />
+    <link rel="alternate" hreflang="x-default" href="https://kedma-live.com/" />
     <link rel="manifest" href="/manifest.json" />
     <!-- Primary Meta Tags -->
     <title>קדמא לייב - ייצוג אמנים והפקת מופעים | Kedma Live - Artist Management</title>
@@ -47,8 +47,22 @@
     <meta name="geo.region" content="IL" />
     <meta name="geo.placename" content="Israel" />
     <meta name="theme-color" content="#A8D5BA" />
-    <!-- Google Analytics: add gtag.js script with your GA4 measurement ID -->
-    <!-- Google Search Console: add verification meta tag when you have one -->
+
+    <!-- ============================================================ -->
+    <!-- 📊 GA4 + Search Console — להשלמה ע"י הלקוח (ראה SEO_PROGRESS.md) -->
+    <!-- ============================================================ -->
+    <!-- GA4: paste Measurement ID below (format: G-XXXXXXXXXX)
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    -->
+    <!-- Google Search Console verification tag goes here:
+    <meta name="google-site-verification" content="PASTE_VERIFICATION_CODE" />
+    -->
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
     <!-- Structured Data (JSON-LD) -->
@@ -65,15 +79,24 @@
       "image": "https://kedma-live.com/ero-background.jpg",
       "sameAs": [
         "https://www.instagram.com/kedmalive",
-        "https://www.facebook.com/kedmalive"
+        "https://www.facebook.com/kedmalive",
+        "https://wa.me/972546507710"
       ],
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+972-54-6507710",
-        "contactType": "Customer Service",
-        "email": "info@kedma-live.com",
-        "availableLanguage": ["Hebrew", "English"]
-      },
+      "contactPoint": [
+        {
+          "@type": "ContactPoint",
+          "telephone": "+972-54-6507710",
+          "contactType": "Customer Service",
+          "email": "info@kedma-live.com",
+          "availableLanguage": ["Hebrew", "English"]
+        },
+        {
+          "@type": "ContactPoint",
+          "telephone": "+972-50-4844614",
+          "contactType": "Customer Service",
+          "availableLanguage": ["Hebrew", "English"]
+        }
+      ],
       "address": {
         "@type": "PostalAddress",
         "addressCountry": "IL",
