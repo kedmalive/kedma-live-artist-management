@@ -12,6 +12,7 @@ import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfUse from './components/TermsOfUse';
 import WhatsAppButton from './components/WhatsAppButton';
 import UpcomingShows from './components/UpcomingShows';
+import FAQ from './components/FAQ';
 import SuccessModal from './components/SuccessModal';
 import { Artist, EventType } from './types';
 import { ARTISTS_DATA } from './constants';
@@ -447,6 +448,8 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      <FAQ />
 
       {/* Contact Section */}
       <section id="contact" className="py-16 sm:py-20 md:py-24 lg:py-32 bg-black">
