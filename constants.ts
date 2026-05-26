@@ -10,6 +10,17 @@ export function splitArtistName(fullName: string): { firstName: string; lastName
   return { firstName, lastName };
 }
 
+/** Builds a Hebrew slug from the artist's name: spaces → dashes. */
+export function getArtistSlug(artist: Artist): string {
+  return artist.name.trim().replace(/\s+/g, '-');
+}
+
+/** Resolves an artist by its (possibly URL-decoded) slug. */
+export function getArtistBySlug(slug: string): Artist | undefined {
+  const decoded = decodeURIComponent(slug);
+  return ARTISTS_DATA.find(a => getArtistSlug(a) === decoded);
+}
+
 export const ARTISTS_DATA: Artist[] = [
   {
     id: 1,

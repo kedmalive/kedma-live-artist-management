@@ -1,10 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Star, Mic2, Music, Calendar, Phone, Mail, Facebook, Instagram, ChevronDown, CheckCircle, Award, ArrowUpRight, Loader2 } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import Navigation from './components/Navigation';
 import ArtistCard from './components/ArtistCard';
-import ArtistModal from './components/ArtistModal';
+import ArtistPage from './components/ArtistPage';
 import AccessibilityMenu from './components/AccessibilityMenu';
 import AccessibilityStatement from './components/AccessibilityStatement';
 import PrivacyPolicy from './components/PrivacyPolicy';
@@ -15,9 +16,29 @@ import SuccessModal from './components/SuccessModal';
 import { Artist, EventType } from './types';
 import { ARTISTS_DATA } from './constants';
 
-const App: React.FC = () => {
+const App: React.FC = () => (
+  <Routes>
+    <Route path="/" element={<HomePage />} />
+    <Route path="/artists/:slug" element={<ArtistPage />} />
+    <Route path="*" element={<Navigate to="/" replace />} />
+  </Routes>
+);
+
+const HomePage: React.FC = () => {
+  const location = useLocation();
+
+  // Scroll to hash on mount / when returning from artist page
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace('#', '');
+      const el = document.getElementById(id);
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
+      }
+    }
+  }, [location.hash]);
+
   const [isScrolled, setIsScrolled] = useState(false);
-  const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
   const [isAccessibilityStatementOpen, setIsAccessibilityStatementOpen] = useState(false);
   const [isPrivacyPolicyOpen, setIsPrivacyPolicyOpen] = useState(false);
@@ -390,10 +411,9 @@ const App: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
             {ARTISTS_DATA.map((artist) => (
-              <ArtistCard 
-                key={artist.id} 
-                artist={artist} 
-                onClick={setSelectedArtist} 
+              <ArtistCard
+                key={artist.id}
+                artist={artist}
               />
             ))}
           </div>
@@ -656,12 +676,6 @@ const App: React.FC = () => {
         onClose={() => setIsTermsOfUseOpen(false)}
       />
 
-      {/* Artist Detail Modal */}
-      <ArtistModal 
-        artist={selectedArtist} 
-        onClose={() => setSelectedArtist(null)} 
-      />
-
       {/* Success Modal */}
       <SuccessModal 
         isOpen={isSuccessModalOpen}
@@ -679,3 +693,4 @@ const App: React.FC = () => {
 }
 
 export default App;
+export { HomePage };

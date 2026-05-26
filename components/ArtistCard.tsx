@@ -1,18 +1,20 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowLeft, Camera } from 'lucide-react';
 import { Artist } from '../types';
-import { splitArtistName } from '../constants';
+import { splitArtistName, getArtistSlug } from '../constants';
 
 interface ArtistCardProps {
   artist: Artist;
-  onClick: (artist: Artist) => void;
+  onClick?: (artist: Artist) => void;
 }
 
-const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onClick }) => (
-  <div 
-    className="group relative h-[450px] sm:h-[500px] md:h-[550px] w-full rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer shadow-2xl transition-all duration-700 hover:-translate-y-4 hover:shadow-[#A8D5BA]/40 bg-[#0a0a0a] border border-white/5"
-    onClick={() => onClick(artist)}
+const ArtistCard: React.FC<ArtistCardProps> = ({ artist }) => (
+  <Link
+    to={`/artists/${encodeURI(getArtistSlug(artist))}`}
+    aria-label={`לדף האמן ${artist.name}`}
+    className="group relative h-[450px] sm:h-[500px] md:h-[550px] w-full rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer shadow-2xl transition-all duration-700 hover:-translate-y-4 hover:shadow-[#A8D5BA]/40 bg-[#0a0a0a] border border-white/5 block"
   >
     {/* Base Image Layer - Top-aligned so faces/heads are not cut off on mobile */}
     <img 
@@ -83,7 +85,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onClick }) => (
         </div>
       </div>
     </div>
-  </div>
+  </Link>
 );
 
 export default ArtistCard;
