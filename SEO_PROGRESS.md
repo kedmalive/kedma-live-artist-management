@@ -10,7 +10,7 @@
 
 ## סטטוס כללי
 **גל נוכחי:** גל 1 הסתיים ✅ | גל 2 — לא התחיל ⏸️
-**עדכון אחרון:** 2026-05-24
+**עדכון אחרון:** 2026-05-26
 
 ---
 
@@ -23,7 +23,7 @@
 - ✅ Schema (EntertainmentBusiness + LocalBusiness JSON-LD) ב-`index.html`
 - ✅ GA4 — Measurement ID מוטמע ומודד
 - ✅ **Google Search Console — מאומת** (תג `google-site-verification` ב-`index.html`)
-- ✅ sitemap הוגש ב-GSC (24/05/2026)
+- ✅ sitemap הוגש ב-GSC ואושר — סטטוס "הצלחה", 1 דף התגלה (26/05/2026)
 
 ---
 
