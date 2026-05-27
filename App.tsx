@@ -88,13 +88,13 @@ const HomePage: React.FC = () => {
   };
 
   const backgroundSlides: { src: string; credit: string }[] = [
-    { src: '/ero-background.jpg', credit: '' },
-    { src: '/ero-bg-1.jpg', credit: '' },
-    { src: '/ero-bg-2.jpg', credit: '' },
-    { src: '/ero-bg-3.JPG', credit: '' },
-    { src: '/ero-bg-4.JPG', credit: 'תמר חנן' },
-    { src: '/ero-bg-5.jpg', credit: 'ארתור לנדה' },
-    { src: '/ero-bg-6.jpg', credit: 'ארתור לנדה' },
+    { src: '/ero-background.webp', credit: '' },
+    { src: '/ero-bg-1.webp', credit: '' },
+    { src: '/ero-bg-2.webp', credit: '' },
+    { src: '/ero-bg-3.webp', credit: '' },
+    { src: '/ero-bg-4.webp', credit: 'תמר חנן' },
+    { src: '/ero-bg-5.webp', credit: 'ארתור לנדה' },
+    { src: '/ero-bg-6.webp', credit: 'ארתור לנדה' },
   ];
   const backgroundImages = backgroundSlides.map((s) => s.src);
 
