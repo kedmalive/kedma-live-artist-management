@@ -190,19 +190,41 @@ const UpcomingShows: React.FC = () => {
       const d = new Date(show.date);
       const startDate = Number.isNaN(d.getTime()) ? show.date : d.toISOString().slice(0, 16);
       return {
-        '@type': 'Event',
+        '@type': 'MusicEvent',
         name: `${show.artist} - ${show.location}`,
         startDate,
+        eventStatus: 'https://schema.org/EventScheduled',
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
         location: {
           '@type': 'Place',
           name: show.location,
-          address: show.location,
+          address: {
+            '@type': 'PostalAddress',
+            addressLocality: show.location,
+            addressCountry: 'IL',
+          },
         },
         performer: {
-          '@type': 'Person',
+          '@type': 'MusicGroup',
           name: show.artist,
         },
-        ...(show.ticketsUrl ? { url: show.ticketsUrl } : {}),
+        organizer: {
+          '@type': 'Organization',
+          name: 'קדמא לייב',
+          url: 'https://kedma-live.com',
+        },
+        ...(show.ticketsUrl
+          ? {
+              url: show.ticketsUrl,
+              offers: {
+                '@type': 'Offer',
+                url: show.ticketsUrl,
+                availability: 'https://schema.org/InStock',
+                priceCurrency: 'ILS',
+                validFrom: new Date().toISOString().slice(0, 10),
+              },
+            }
+          : {}),
       };
     });
 
