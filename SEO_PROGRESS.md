@@ -9,8 +9,8 @@
 ---
 
 ## סטטוס כללי
-**גל נוכחי:** גל 1 ✅ | גל 2 ✅ הסתיים (2.1, 2.2, 2.3, 2.4 הושלמו)
-**עדכון אחרון:** 2026-05-26
+**גל נוכחי:** גל 1 ✅ | גל 2 ✅ | גל 4 (GEO ל-AI) 🚧 בעבודה
+**עדכון אחרון:** 2026-05-29
 
 ---
 
@@ -18,7 +18,7 @@
 
 - ✅ `public/sitemap.xml` — נקי, רק `https://kedma-live.com/` עם `lastmod` תקין
 - ✅ `public/robots.txt` — פתוח ל-AI crawlers (GPTBot, ClaudeBot, PerplexityBot, Google-Extended)
-- ✅ `public/llms.txt` — קיים ומתאר את האתר ל-LLMs
+- ✅ `public/llms.txt` — נוצר בגל 4 (לא היה קיים בפועל למרות שתועד כאן בעבר)
 - ✅ favicon מתוקן (`/favicon.svg`)
 - ✅ Schema (EntertainmentBusiness + LocalBusiness JSON-LD) ב-`index.html`
 - ✅ GA4 — Measurement ID מוטמע ומודד
@@ -79,6 +79,30 @@
 - ניתוח ביצועים ב-GSC אחרי 30 יום (impressions, CTR, queries).
 - Core Web Vitals — לבדוק עם PageSpeed.
 - backlinks ו-outreach.
+
+---
+
+## גל 4 — GEO ל-AI (ChatGPT / Perplexity / Claude) 🚧 בעבודה
+
+⚠️ **פער שהתגלה:** גל 1 תיעד `llms.txt` ו-robots.txt "פתוח ל-AI crawlers" כ-✅, אבל בפועל הקובץ `llms.txt` לא היה קיים ו-robots.txt הכיל רק `User-agent: *`. תוקן בגל זה.
+
+### משימות
+
+#### 4.1 `public/llms.txt` ✅ הושלם (29/05/2026)
+- ✅ נוצר קובץ `llms.txt` מלא לפי מוסכמת llmstxt.org (כותרת + summary + סקשנים עם קישורים).
+- ✅ תיאור החברה, אזורי פעילות, סוגי אירועים, פרטי קשר ואנשי קשר.
+- ✅ רשימת 7 האמנים עם קטגוריה, שם אנגלי וקישור ישיר לדף האמן.
+- ✅ סיכום שאלות נפוצות (6 שאלות) בפורמט Q&A קצר לציטוט ע"י LLMs.
+- ✅ קישורים לעמודי הבית, FAQ, הופעות ויצירת קשר.
+
+#### 4.2 robots.txt — הרשאות מפורשות ל-AI crawlers ✅ הושלם (29/05/2026)
+- ✅ נוספו כללי `Allow` מפורשים: GPTBot, ChatGPT-User, OAI-SearchBot, ClaudeBot, anthropic-ai, Claude-Web, PerplexityBot, Perplexity-User, Google-Extended, Applebot(-Extended), Bingbot, CCBot, cohere-ai.
+
+### לעשות אחר כך (גל 4 — נותר)
+- 📌 לאחר deploy: לוודא ש-`https://kedma-live.com/llms.txt` ו-`robots.txt` מוגשים נכון (Content-Type, 200).
+- 📌 לשקול `llms-full.txt` עם ביוגרפיות מלאות (fullDetails) לכל אמן.
+- 📌 להרחיב את ה-FAQ (כיום 6 שאלות) בשאלות מכוונות-AI: "מי האמנים הכי מבוקשים?", "כמה עולה להזמין X?", "אמן לחתונה דתית".
+- 📌 לבדוק ציטוט בפועל ב-ChatGPT/Perplexity על שאילתות כמו "הזמנת אמנים לאירוע בישראל".
 
 ---
 
